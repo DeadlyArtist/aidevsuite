@@ -172,7 +172,7 @@ class Flow {
         const url = getHashQueryVariable('url');
         Flow.setStatus('Loading external script...');
 
-        Flow.externCodeEditorPromise.then(e => {
+        Flow.externCodeEditorPromise?.then(e => {
             Flow.externContainerElement.classList.remove('hide');
             Flow.externTargetElement.updatePlaceholder('Loading...');
             Flow.externTargetElement.update();
@@ -185,14 +185,14 @@ class Flow {
             const page = await promise;
             page.url = url;
             Flow.loadedExternPage = page;
-            if (page.code.length == 0) Flow.externTargetElement.updatePlaceholder('Loaded script seems to be empty...');
-            else Flow.externTargetElement.setValue(page.code);
-            Flow.externTargetElement.update();
+            if (page.code.length == 0) Flow.externTargetElement?.updatePlaceholder('Loaded script seems to be empty...');
+            else Flow.externTargetElement?.setValue(page.code);
+            Flow.externTargetElement?.update();
             Flow.setStatus('Finished loading external script.');
         } catch (e) {
             console.log(e);
-            Flow.externTargetElement.updatePlaceholder('Failed loading external script.');
-            Flow.externTargetElement.update();
+            Flow.externTargetElement?.updatePlaceholder('Failed loading external script.');
+            Flow.externTargetElement?.update();
             Flow.setStatus('Error: Failed loading external script: ' + e.message, true);
         }
         doScrollTick();
