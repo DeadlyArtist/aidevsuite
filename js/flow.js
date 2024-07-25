@@ -169,7 +169,7 @@ class Flow {
 
     static async loadScript() {
         Flow.loadedExternPage = null;
-        const url = Flow.urlEditorElement.textContent;
+        const url = getHashQueryVariable('url');
         Flow.setStatus('Loading external script...');
 
         Flow.externCodeEditorPromise.then(e => {
