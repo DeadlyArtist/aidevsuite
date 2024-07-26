@@ -150,7 +150,7 @@ async function forever() {
 }
 
 // Event logic to communicate with origin
-function postRequest(type, content, id = null, pingId = null, pingSourceEvent = null) {
+function postRequest(type, content = null, id = null, pingId = null, pingSourceEvent = null) {
     postMessage({ id, pingId, pingSourceId: pingSourceEvent?.pingId, type, content });
 }
 
@@ -162,11 +162,11 @@ function postErrorResponse(requestEvent, message, content = null) {
     postMessage({ id: requestEvent.id, type: requestEvent.type, response: true, status: errorStatus, content, message });
 }
 
-function postIFrameMessage(type, content) {
+function postIFrameMessage(type, content = null) {
     postMessage({ iframe: true, type, content });
 }
 
-function requireResponse(type, content, onPing = null, pingSourceEvent = null) {
+function requireResponse(type, content = null, onPing = null, pingSourceEvent = null) {
     return new Promise((resolve, reject) => {
         const id = generateUniqueId();
         let pingId = null;

@@ -128,7 +128,7 @@ function renderMarkdown(element, markdown, options = null) {
     else MarkdownHelpers.highlightExtensionEnabled = true;
     // Render markdown
     let html = marked.parse(markdown);
-    if (!html) {
+    if (!html.trim()) {
         element.innerHTML = '';
         return;
     }
@@ -138,6 +138,10 @@ function renderMarkdown(element, markdown, options = null) {
 
     // Render math
     const children = fromHTML(html, false);
+    if (!children) {
+        element.innerHTML = '';
+        return;
+    }
     MarkdownHelpers.adjustMarkedOuput(...children);
     for (let child of children) {
         if (options.katex) renderMathInElement(child);

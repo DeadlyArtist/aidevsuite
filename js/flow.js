@@ -2983,6 +2983,7 @@ function getFlowPage() {
     elements.push(sticky);
 
     const newUrl = url ?? localStorage.getItem('externUrl');
+    if (!url && newUrl) Flow.updateUrl(newUrl);
     if (mode == Flow.editMode) {
         const loadContainer = fromHTML(`<div>`);
         Flow.loadContainer = loadContainer;
