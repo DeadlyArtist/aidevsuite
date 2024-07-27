@@ -97,3 +97,7 @@ function toAssistantMessage(prompt) {
 function toImageMessage(url) {
     return {userRole, prompt: "", url};
 }
+
+async function requireApiKey(model = null) {
+    return await requireResponse(requireEventType, {apiKeyFor: model})
+}

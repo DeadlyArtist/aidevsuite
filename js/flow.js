@@ -277,6 +277,13 @@ class Flow {
     static async generateScript(rewrite = false) {
         if (Flow.generating) return;
         Flow.generating = true;
+        const needsApiKey = ChatApi.getApiKey() == null;
+        if (needsApiKey) await Settings.open();
+        if (ChatApi.getApiKey() == null) {
+            Flow.setStatus('Required API key was missing.');
+            return;
+        }
+
         Flow.generateScriptButton.setAttribute('disabled', '');
         Flow.rewriteScriptButton.setAttribute('disabled', '');
         Flow.setStatus('Generating script...');
@@ -389,8 +396,11 @@ class Flow {
         await Flow.destroyWorker();
         Flow.hideProgress();
 
-        if (error) Flow.setStatus("Script Error: " + error, true);
-        else Flow.setStatus("Finished");
+        if (error) {
+            let errorMessage = "Script Error: " + error;
+            if (error.message == 'api_key_missing') errorMessage = "Error: Required API key was missing."
+            Flow.setStatus(errorMessage, true);
+        } else Flow.setStatus("Finished");
         console.log(Flow.status);
 
         Flow.isRunning = false;
@@ -462,6 +472,7 @@ class Flow {
     static storageEventType = "storageEventType";
     static urlEventType = "urlEventType";
     static fetchInternalEventType = "fetchInternalEventType";
+    static requireEventType = "requireEventType";
 
     // Element types
     static breakType = "breakType";
@@ -673,6 +684,8 @@ class Flow {
                 Flow.onUrlRequest(e);
             } else if (type === Flow.fetchInternalEventType) {
                 Flow.onFetchInternalRequest(e);
+            } else if (type === Flow.requireEventType) {
+                Flow.onRequire(e);
             }
         } catch (error) {
             console.error("Error while executing worker request:", error.stack);
@@ -773,6 +786,26 @@ class Flow {
         } else {
             Flow.postSuccessResponse(e, await fetchText(url));
         }
+    }
+
+    static async onRequire(event) {
+        const e = event;
+        const content = e.content;
+        let error = null;
+        if (content.apiKeyFor !== undefined) {
+            let hasApiKey = ChatApi.getApiKey(content.apiKeyFor);
+            if (!hasApiKey) {
+                await Settings.open();
+                hasApiKey = ChatApi.getApiKey(content.apiKeyFor);
+                if (!hasApiKey) {
+                    error = 'api_key_missing';
+                }
+            }
+        }
+
+        if (error) Flow.postErrorResponse(e, error);
+        else Flow.postSuccessResponse(e);
+        return;
     }
 
     // Validation
@@ -901,6 +934,7 @@ class Flow {
             } else if (type === Flow.buttonType) {
                 settings.buttonSubType = options.buttonSubType ?? Flow.complexButtonType;
                 settings.fullWidth = options.fullWidth ?? false;
+                settings.closeDialogOnClick = options.closeDialogOnClick;
             }
         } else if (Flow.inputTypes.has(type)) {
             settings.hasValidation = element.hasValidation ?? false;
@@ -1359,6 +1393,10 @@ class Flow {
                 mainChildElements.forEach(e => element.appendChild(e));
             } else if (type == Flow.buttonType) {
                 const buttonElement = fromHTML(`<button class="listHorizontal">`);
+                if (settings.group.location == Flow.dialogLocation && settings.group.noAccept && settings.closeDialogOnClick) {
+                    buttonElement.addEventListener('click', settings.group.dialogCloseCallback);
+                    buttonElement.classList.add('dialogCloseButton');
+                }
                 settings.disabledElements.push(buttonElement);
                 if (settings.buttonSubType == Flow.complexButtonType) {
                     buttonElement.classList.add('complexButton');
@@ -1855,6 +1893,7 @@ class Flow {
         const container = fromHTML(`<div class="w-100 divList gap-2">`);
         if (settings.element.hide) container.classList.add('hide');
         settings.htmlElement = container;
+        settings.dialogCloseCallback = e => Flow.onCloseDialog(settings);
 
         let element = container;
 
@@ -1893,12 +1932,15 @@ class Flow {
         }
 
         if (settings.location == Flow.dialogLocation) {
+            Flow.dialogOutputOverlay.classList.remove('dialogCloseButton');
+            Flow.dialogOutputCancelButton.classList.remove('dialogCloseButton');
             if (settings.noAccept) {
                 Flow.dialogOutputAcceptButton.removeAttribute('disabled');
                 Flow.dialogOutputFooter.classList.add('hide');
+
                 if (!settings.noCloseOnOverlay) {
                     Flow.dialogOutputOverlay = replaceElementWithClone(Flow.dialogOutputOverlay);
-                    Flow.dialogOutputOverlay.addEventListener('click', e => Flow.onCloseDialog(settings));
+                    Flow.dialogOutputOverlay.addEventListener('click', settings.dialogCloseCallback);
                 }
             } else {
                 settings.acceptButtonElement = Flow.dialogOutputAcceptButton;
@@ -1906,6 +1948,7 @@ class Flow {
                 else Flow.dialogOutputAcceptButton.removeAttribute('disabled');
 
                 Flow.dialogOutputCancelButton = replaceElementWithClone(Flow.dialogOutputCancelButton);
+                Flow.dialogOutputCancelButton.classList.add('dialogCloseButton');
                 Flow.dialogOutputCancelButton.addEventListener('click', e => Flow.onCancelDialog(settings));
                 Flow.dialogOutputAcceptButton = replaceElementWithClone(Flow.dialogOutputAcceptButton);
                 Flow.dialogOutputAcceptButton.addEventListener('click', e => Flow.onAccept(settings));
@@ -2277,6 +2320,9 @@ class Flow {
         const e = event;
         const content = e.content;
 
+        const needsApiKey = ChatApi.getApiKey(content.options?.model) == null;
+        if (needsApiKey) await Settings.open();
+
         if (content.get != null) {
             if (content.get == 'availableModels') {
                 const models = ChatApi.getSortedModels(ChatApi.getAvailableModels());
@@ -2604,7 +2650,7 @@ class Flow {
 
         // Footer
         const footer = fromHTML(`<div class="listHorizontal">`);
-        const cancelButton = fromHTML(`<button class="w-100 largeElement complexButton flexFill">Cancel`);
+        const cancelButton = fromHTML(`<button class="w-100 largeElement complexButton flexFill dialogCloseButton">Cancel`);
         cancelButton.addEventListener('click', e => Flow.closeImportDialog());
         footer.appendChild(cancelButton);
         const importButton = fromHTML(`<button class="w-100 largeElement complexButton flexFill" disabled>Import`);
@@ -2855,7 +2901,7 @@ class Flow {
 
         // Footer
         const footer = fromHTML(`<div class="listHorizontal">`);
-        const cancelButton = fromHTML(`<button tooltip="Savely cancel any changes" class="w-100 largeElement complexButton flexFill">Cancel`);
+        const cancelButton = fromHTML(`<button tooltip="Savely cancel any changes" class="w-100 largeElement complexButton flexFill dialogCloseButton">Cancel`);
         cancelButton.addEventListener('click', e => Flow.closeStarDialog());
         footer.appendChild(cancelButton);
         const saveButton = fromHTML(`<button tooltip="No changes" class="w-100 largeElement complexButton flexFill" disabled>Save`);
@@ -3020,7 +3066,7 @@ function getFlowPage() {
     elements.push(sticky);
 
     const newUrl = url ?? localStorage.getItem('externUrl');
-    if (!url && newUrl) Flow.updateUrl(newUrl);
+    if (!url && newUrl && name == 'extern') Flow.updateUrl(newUrl);
     if (mode == Flow.editMode) {
         const loadContainer = fromHTML(`<div>`);
         Flow.loadContainer = loadContainer;
@@ -3123,7 +3169,6 @@ function getFlowPage() {
 
             // Rewrite button
             const rewriteButton = fromHTML(`<button class="largeElement complexButton">`);
-            if (!settings.openAIApiKey) rewriteButton.setAttribute('disabled', '');
             Flow.rewriteScriptButton = rewriteButton;
             const rewriteButtonList = fromHTML(`<div class="listHorizontal">`);
             const rewriteIcon = icons.retry();
@@ -3138,7 +3183,6 @@ function getFlowPage() {
 
             // Generate button
             const generateButton = fromHTML(`<button class="largeElement complexButton">`);
-            if (!settings.openAIApiKey) generateButton.setAttribute('disabled', '');
             Flow.generateScriptButton = generateButton;
             const generateButtonList = fromHTML(`<div class="listHorizontal">`);
             const sparklesIcon = icons.sparkles();

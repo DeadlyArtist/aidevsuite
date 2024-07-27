@@ -119,11 +119,13 @@ class ChatApi {
         else if (settings.groqApiKey) return ChatApi.defaultGroqModel;
     }
 
-    static getApiKey(model) {
+    static getApiKey(model = null) {
         model ??= ChatApi.getDefaultModel();
         if (ChatApi.gptModels.has(model)) return settings.openAIApiKey;
         else if (ChatApi.anthropicModels.has(model)) return settings.anthropicApiKey;
         else if (ChatApi.groqModels.has(model)) return settings.groqApiKey;
+
+        return null;
     }
 
     static getEndpoint(model) {
@@ -254,6 +256,10 @@ class ChatApi {
         options ??= {};
         options.continueAfterMaxTokens ??= true;
 
+
+        const needsApiKey = ChatApi.getApiKey(options.model) == null;
+        if (needsApiKey) await Settings.open();
+
         const messagesCopy = [...messages];
         let response;
         let result = '';
@@ -346,6 +352,10 @@ class ChatApi {
     static async streamChat(messages, onUpdate, options) {
         options ??= {};
         options.continueAfterMaxTokens ??= true;
+
+        const needsApiKey = ChatApi.getApiKey(options.model) == null;
+        if (needsApiKey) await Settings.open();
+
         const model = options.model ?? ChatApi.getDefaultModel();
         console.log("Chat Model:", model);
 

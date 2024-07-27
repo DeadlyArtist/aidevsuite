@@ -1,5 +1,6 @@
 class Monaco {
     static onInitMonacoEditor = new Map();
+
     static setupEventListeners() {
         document.querySelectorAll('[monaco-editor-init]').forEach(e => Monaco._tryInitializeMonaco(e));
 
@@ -22,7 +23,7 @@ class Monaco {
         });
 
         // Start observing the body for child additions
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, {childList: true, subtree: true});
 
         monaco.editor.defineTheme('my-dark', {
             base: 'vs-dark',
@@ -45,6 +46,7 @@ class Monaco {
     }
 
     static currentTheme = null;
+
     static updateTheme() {
         if (colorScheme == lightColorScheme) {
             Monaco.currentTheme = 'my-light';
@@ -94,7 +96,7 @@ class Monaco {
         options.formatOnType ??= true;
         if (!options.text) options.wrappingIndent ??= 'deepIndent';
         options.autoDetectHighContrast = false;
-        options.padding ??= { top: '25px', bottom: '25px' };
+        options.padding ??= {top: '25px', bottom: '25px'};
         if (!options.showMinimap) options.minimap ??= {
             enabled: false,
         }
@@ -128,6 +130,7 @@ class Monaco {
             let ignoreEvent = false;
             editor.maxHeight = options.maxHeight ?? 800;
             editor.originalMaxHeight = editor.maxHeight;
+
             function updateHeight() {
                 const contentHeight = editor.maxHeight == 0 ? editor.getContentHeight() : Math.min(editor.maxHeight, editor.getContentHeight());
                 const contentWidth = containerElement.parentElement.offsetWidth;
@@ -135,7 +138,7 @@ class Monaco {
                 containerElement.style.height = `${contentHeight}px`;
                 try {
                     ignoreEvent = true;
-                    editor.layout({ width: contentWidth, height: contentHeight });
+                    editor.layout({width: contentWidth, height: contentHeight});
                 } finally {
                     ignoreEvent = false;
                 }
@@ -227,12 +230,13 @@ class PlaceholderContentWidget {
     }
 
     updatePlaceholder(placeholder) {
+        if (!this.domNode) return;
         this.domNode.textContent = this.placeholder = placeholder;
     }
 
     getPosition() {
         return {
-            position: { lineNumber: 1, column: 1 },
+            position: {lineNumber: 1, column: 1},
             preference: [monaco.editor.ContentWidgetPositionPreference.EXACT],
         };
     }
@@ -242,7 +246,7 @@ class PlaceholderContentWidget {
     }
 }
 
-require.config({ paths: { vs: 'dist/monaco-editor/min/vs' } });
+require.config({paths: {vs: 'dist/monaco-editor/min/vs'}});
 
 window.addEventListener('load', e => Monaco.setupEventListeners());
 window.addEventListener('color-scheme-changed', e => Monaco.updateTheme());

@@ -27,6 +27,7 @@ const setStatusEventType = "setStatusEventType";
 const storageEventType = "storageEventType";
 const urlEventType = "urlEventType";
 const fetchInternalEventType = "fetchInternalEventType";
+const requireEventType = "requireEventType";
 
 // Element types
 const breakType = "breakType";
@@ -497,6 +498,7 @@ function createPresetIcon(name, options = null) {
  * - **onClick** (function): A callback function that is called whenever the button is clicked. It has neither parameters nor a return value.
  * - **fullWidth** (bool) [optional]: Whether its width should be stretched to 100%. Default is `false`.
  * - **disabled** (bool) [optional]: Whether the button is disabled. Default is `false`.
+ * - **closeDialogOnClick** (bool) [optional]: Whether to close the current dialog on click. This is exclusive to dialogs with `noAccept`. Default is `false`.
  */
 function createContainer(type, elements, options = null) {
     options ??= {};

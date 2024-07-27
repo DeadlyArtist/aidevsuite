@@ -1,8 +1,9 @@
-
 function closeAllDialogs() {
     let dialogs = document.getElementsByClassName("dialog");
     for (let dialog of dialogs) {
-        dialog.classList.add("hide");
+        const closeButton = dialog.querySelector('.dialogCloseButton');
+        if (closeButton) closeButton.click();
+        else dialog.classList.add("hide");
     }
 }
 
@@ -11,4 +12,5 @@ function escapeDialogs(e) {
         closeAllDialogs();
     }
 }
+
 window.addEventListener("keyup", e => escapeDialogs(e));

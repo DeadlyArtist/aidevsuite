@@ -29,6 +29,7 @@ const samples = ['data/Fetch.json', 'data/Simple Chat.json', 'data/Chat.json', '
 let isUser = false;
 
 const pageLoadedEvent = new CustomEvent("pageloaded");
+
 function loadLocalPages() {
     const localPagesJSON = localStorage.getItem('pages');
     if (localPagesJSON) {
@@ -105,14 +106,15 @@ async function fetchExternalPage(url) {
     const localIdentifier = '#local/';
     if (url.startsWith(localIdentifier)) {
         const page = localPages.get(url.split(localIdentifier)[1].split('?')[0]);
-        return { code: page.code };
+        return {code: page.code};
     }
 
     const data = await fetchJson(url);
     if (data.securityId !== securityId) {
         console.log("Error Source:", url, data);
         throw new Error('Security check failed.')
-    };
+    }
+    ;
 
     return data;
 }
@@ -203,7 +205,7 @@ function updatePagesSidebar() {
     const linkedPagesList = document.getElementById('linkedPagesList');
     linkedPagesList.innerHTML = '';
     linkedPages.values().forEach(p => {
-        let link = '#extern?url=' + p.link;
+        let link = '#extern?url=' + escapeHashParameter(p.link);
         if (p.autoRun) link += '&mode=run';
         if (isUser) link += '&user=true';
 

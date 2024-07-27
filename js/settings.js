@@ -1,4 +1,3 @@
-
 class Settings {
     static _initialSettings = JSON.parse(localStorage.getItem('settings')) || {};
 
@@ -15,16 +14,6 @@ class Settings {
     static pagesElement = null;
 
     static chatbotPage = 'chatbot';
-
-    static checkHasApiKey() {
-        if (ChatApi.getDefaultModel()) {
-            Flow.rewriteScriptButton?.removeAttribute('disabled');
-            Flow.generateScriptButton?.removeAttribute('disabled');
-        } else {
-            Flow.rewriteScriptButton?.setAttribute('disabled', '');
-            Flow.generateScriptButton?.setAttribute('disabled', '');
-        }
-    }
 
     static getChatbotPage() {
         const chatbotPage = fromHTML(`<div class="divList gap-2 hide">`);
@@ -71,7 +60,6 @@ class Settings {
         groqApiKeyElement.value = settings.groqApiKey ?? '';
         groqApiKeyElement.addEventListener('input', e => {
             settings.groqApiKey = groqApiKeyElement.value;
-            Settings.checkHasApiKey();
         });
         groqApiKeySetting.appendChild(groqApiKeyElement);
         chatbotPage.appendChild(groqApiKeySetting);
@@ -97,9 +85,17 @@ class Settings {
         [...Settings.pageBar.children].forEach(e => e.getAttribute('settings-button') == page ? e.setAttribute('disabled', '') : e.removeAttribute('disabled'));
     }
 
-    static open(page = null) {
+    static async open(page = null) {
         page ??= Settings.chatbotPage;
-        Settings.close();
+        closeAllDialogs();
+
+        let closeCallback;
+        const promise = new Promise(resolve => {
+            closeCallback = e => {
+                Settings.close();
+                resolve();
+            }
+        });
 
         const dialogsContainer = document.getElementById('dialogs');
         const dialogElement = fromHTML(`<div class="dialog">`);
@@ -108,10 +104,10 @@ class Settings {
         const element = fromHTML(`<div class="dialogInnerContent largeElement bordered grounded">`);
         const titleBar = fromHTML(`<div class="listContainerHorizontal">`);
         titleBar.appendChild(fromHTML(`<h1>Settings`));
-        const closeButton = fromHTML(`<button class="h-100">`);
+        const closeButton = fromHTML(`<button class="h-100 dialogCloseButton">`);
         closeButton.setAttribute('tooltip', 'Settings are saved automatically even before closing.');
         closeButton.appendChild(icons.close());
-        closeButton.addEventListener('click', e => Settings.close());
+        closeButton.addEventListener('click', closeCallback);
         titleBar.appendChild(closeButton);
         element.appendChild(titleBar);
         element.appendChild(hb(2));
@@ -137,13 +133,15 @@ class Settings {
         contentElement.appendChild(element);
         dialogElement.appendChild(contentElement);
         const overlayElement = fromHTML(`<div class="dialogOverlay">`);
-        overlayElement.addEventListener('click', e => Settings.close());
+        overlayElement.addEventListener('click', closeCallback);
         dialogElement.appendChild(overlayElement);
         dialogsContainer.appendChild(dialogElement);
 
         Settings.element = dialogElement;
 
         Settings.changePage(page);
+
+        return promise;
     }
 
     static close() {
