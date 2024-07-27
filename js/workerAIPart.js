@@ -7,17 +7,18 @@
  *         - **response** (string): The newly streamed tokens concatenated with the previous response text.
  *     - **model** (string) [optional]: The model to be used. Default is the best available.
  *     - **seed** (number) [optional]: The seed to be used. Very unreliable.
+ *     - **jsonMode** (bool) [optional]: Whether to require valid json as output. Default is `false`.
  */
 async function chat(context, options = null) {
     const onUpdate = options?.onUpdate;
 
     let response;
     if (onUpdate == null) {
-        response = await requireResponse(chatEventType, { context, options });
+        response = await requireResponse(chatEventType, {context, options});
     } else {
         delete options.onUpdate;
         options.hasOnUpdate = true;
-        response = await requireResponse(chatEventType, { context, options }, (content, event) => {
+        response = await requireResponse(chatEventType, {context, options}, (content, event) => {
             const transformed = onUpdate(content);
             postSuccessResponse(event, transformed);
         });
@@ -29,6 +30,7 @@ async function chat(context, options = null) {
 const systemRole = "system";
 const userRole = "user";
 const assistantRole = "assistant";
+
 class ChatHelpers {
     static messageToString(message) {
         return message.role + ": " + message.content;
@@ -39,7 +41,6 @@ class ChatHelpers {
     static gpt4TurboName = "GPT-4 Turbo";
     static gpt4Name = "GPT-4";
     static gpt3_5TurboName = "GPT-3.5 Turbo";
-    static llama3_1_405bName = "Llama 3.1 405b";
     static llama3_1_70bName = "Llama 3.1 70b";
     static llama3_1_8bName = "Llama 3.1 8b";
 
@@ -48,7 +49,6 @@ class ChatHelpers {
     static gpt4TurboIdentifier = "gpt-4-turbo";
     static gpt4Identifier = "gpt-4";
     static gpt3_5TurboIdentifier = "gpt-3.5-turbo";
-    static llama3_1_405bIdentifier = "llama-3.1-405b-reasoning";
     static llama3_1_70bIdentifier = "llama-3.1-70b-versatile";
     static llama3_1_8bIdentifier = "llama-3.1-8b-instant";
 
@@ -71,12 +71,12 @@ class ChatHelpers {
     ]);
 
     static async getAvailableModels() {
-        return requireResponse(chatEventType, { get: 'availableModels' });
+        return requireResponse(chatEventType, {get: 'availableModels'});
     }
 }
 
 function toMessage(role, prompt, url = null) {
-    return { role, prompt, url };
+    return {role, prompt, url};
 }
 
 function toSystemMessage(prompt) {
@@ -95,5 +95,5 @@ function toAssistantMessage(prompt) {
 }
 
 function toImageMessage(url) {
-    return { userRole, prompt: "", url };
+    return {userRole, prompt: "", url};
 }

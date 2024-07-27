@@ -145,25 +145,33 @@ function generateUniqueId() {
 
 // If you show stuff with `noAccept`, there's a very high chance you will want to await this at the end of your script.
 async function forever() {
-    await new Promise(() => { });
+    await new Promise(() => {
+    });
     log('This will never run!');
 }
 
 // Event logic to communicate with origin
 function postRequest(type, content = null, id = null, pingId = null, pingSourceEvent = null) {
-    postMessage({ id, pingId, pingSourceId: pingSourceEvent?.pingId, type, content });
+    postMessage({id, pingId, pingSourceId: pingSourceEvent?.pingId, type, content});
 }
 
 function postSuccessResponse(requestEvent, content = null, message = null) {
-    postMessage({ id: requestEvent.id, type: requestEvent.type, response: true, status: successStatus, content, message });
+    postMessage({
+        id: requestEvent.id,
+        type: requestEvent.type,
+        response: true,
+        status: successStatus,
+        content,
+        message
+    });
 }
 
 function postErrorResponse(requestEvent, message, content = null) {
-    postMessage({ id: requestEvent.id, type: requestEvent.type, response: true, status: errorStatus, content, message });
+    postMessage({id: requestEvent.id, type: requestEvent.type, response: true, status: errorStatus, content, message});
 }
 
 function postIFrameMessage(type, content = null) {
-    postMessage({ iframe: true, type, content });
+    postMessage({iframe: true, type, content});
 }
 
 function requireResponse(type, content = null, onPing = null, pingSourceEvent = null) {
@@ -203,13 +211,14 @@ function createObjectUrl(object, options) {
 
 const __importCallbacks = new Map();
 const __importErrorCallbacks = new Map();
+
 /**
  * You probably don't want to use this.
  */
 function importCode(code) {
     return new Promise((resolve, reject) => {
         const id = generateUniqueId();
-        const blobUrl = createObjectUrl(`async function _____outerImportWrapper_____() {async function _____importWrapper_____() {\n\n\n/* Script starts here */\n${code}\n/* Script ends here */\n\n\n}\ntry{\nawait _____importWrapper_____();\n__importCallbacks.get("${id}")();}\ncatch(e) {\n__importErrorCallbacks.get("${id}")(e);\n}\n}\n_____outerImportWrapper_____();`, { type: commonMimeTypes.javascript });
+        const blobUrl = createObjectUrl(`async function _____outerImportWrapper_____() {async function _____importWrapper_____() {\n\n\n/* Script starts here */\n${code}\n/* Script ends here */\n\n\n}\ntry{\nawait _____importWrapper_____();\n__importCallbacks.get("${id}")();}\ncatch(e) {\n__importErrorCallbacks.get("${id}")(e);\n}\n}\n_____outerImportWrapper_____();`, {type: commonMimeTypes.javascript});
         __importCallbacks.set(id, () => resolve());
         __importErrorCallbacks.set(id, e => reject(e));
         importScripts(blobUrl); // Evaluate the incoming code
@@ -268,7 +277,7 @@ async function load(url) {
 
 /**
  * Creates a break. Not really necessary due to the default `gap`s.
- * 
+ *
  * - **size** (number) [optional]: How large the break is. Must be between 1 and 8.
  */
 function createBreak(size, options = null) {
@@ -315,13 +324,13 @@ function createAnchor(options = null) {
 /**
  * - **type** (string): Specifies the type of element. All `textTypes` are supported.
  * - **options** (object): An object that can have the following properties depending on its `type`:
- * 
+ *
  * ## All Types
  * - **title** (string) [optional]: The title to be shown on hover. *Only* use for small labels with size constraints.
  * - **useTooltipInstead** (bool) [optional]: Whether to show the title using a custom tooltip instead of the inbuilt title property. Default is `true`.
  * - **placeholder** (string) [optional]: The placeholder text that appears when the text is empty.
  * - **maxHeight** (number) [optional]: Must be between `0` and `8`. For no max height use `0`. Default is `0`.
- * 
+ *
  * ## `infoType`
  * - **mode** (string) [optional]: Whether to highlight the text in a special way. Valid values are:
  *     - `"danger"`
@@ -389,7 +398,7 @@ function createCode(code, options = null) {
  *             {left: "\\begin{gather}", right: "\\end{gather}", display: true},
  *             {left: "\\begin{CD}", right: "\\end{CD}", display: true},
  *             {left: "\\[", right: "\\]", display: true},
-            ]
+ ]
  */
 function createMarkdown(markdown, options = null) {
     const content = {
@@ -465,22 +474,22 @@ function createPresetIcon(name, options = null) {
  * - **type** (string): Specifies the type of the container. All `containerTypes` are supported. Use `verticalType` for simple grouping of elements without any effect on their appearance.
  * - **elements** (object or array): A single element or a list of elements displayed within the container. Please do not put buttons or interactables within buttons.
  * - **options** (object): An object that contains various options specific to the `type` of input. The options available depend on the input type.
- * 
+ *
  * ## Options Configuration by Container Type
  * ### All Types
  * - **gap** (number) [optional]: The gap between elements. Must be between `0` and `8`. Default is `4`.
  * - **title** (string) [optional]: The title to be shown on hover. *Only* use for small labels with size constraints.
  * - **useTooltipInstead** (bool) [optional]: Whether to show the title using a custom tooltip instead of the inbuilt title property. Default is `true`.
- * 
+ *
  * ### `verticalType`
  * - **centered** (bool) [optional]: Whether the items should be centered. Default is `false`.
- * 
+ *
  * ### `barType`
  * - **barSubType** (string) [optional]: The type of the bar or list. Default is `navBarType`. Supported values are:
  *     - `navBarType` // Uses `justify-content: space-between;`, works well with `emptyType` elements. E.g. a navBar with an emptyElement and a button will cause the button to float right.
  *     - `listBarType` // Normal wrapping list. You can use `stretch` on its children to fill the available width.
  * - **centered** (bool) [optional]: Whether the items should be centered. Default is `false`.
- * 
+ *
  * ### `buttonType`
  * - **buttonSubType** (string) [optional]: Specifies the type of the button. Default is `complexButtonType`. Supported values are:
  *     - `simpleButtonType` // *Only* use this for small buttons that should blend in, such as an X to close a dialog.
@@ -545,7 +554,7 @@ function createSimpleButton(elements, onClick, options = null) {
 
 /**
  * Creates an input. After an shown input is accepted, it is automatically converted into its non input counterpart for the user to review. To stop this, you must `remove` the element.
- * 
+ *
  * ## Parameters
  * - **type** (string): Specifies the type of input. All `inputTypes` are supported.
  * - **options** (object): An object that contains various options specific to the `type` of input. The options available depend on the input type.
@@ -571,7 +580,7 @@ function createSimpleButton(elements, onClick, options = null) {
  *
  * ### `numberInputType`
  * - **defaultValue** (number) [optional]: The default number value for the input. Default is `0`.
- * 
+ *
  * ### `passwordInputType`
  * - **defaultValue** (string) [optional]: The default text value for the input. Default is an empty string `''`.
  * - **placeholder** (string) [optional]: The placeholder text that appears when the input is empty. Default is `"Enter password here..."`.
@@ -582,24 +591,24 @@ function createSimpleButton(elements, onClick, options = null) {
  * - **language** (string) [optional]: The language of the code.
  * - **context** (string) [optional]: Information about the context in which the code will be executed. Allows better integration with chatbots.
  * - **maxHeight** (number) [optional]: Must be between `0` and `8`. For no max height use `0`. Default is `6`.
- * 
+ *
  * ### `markdownInputType`
  * - **defaultValue** (string) [optional]: The default code value for the input. Default is an empty string `''`.
  * - **placeholder** (string) [optional]: The placeholder text that appears when the input is empty. Default is `"Enter markdown here..."`.
  * - **katex** (bool) [optional]: Whether to render katex. Default is `true`.
  * - **katexDelimiters** (array) [optional]: The delimiters to use to find find math equations. Default: Same as for `createText`.
  * - **maxHeight** (number) [optional]: Must be between `0` and `8`. For no max height use `0`. Default is `6`.
- * 
+ *
  * ### `checkboxInputType`
  * - **defaultValue** (number) [optional]: The default bool value for the input. Default is false.
  * - **description** (string) [optional]: A short description to the left of the checkbox. Default is an empty string `''`.
- * 
+ *
  * ### `selectInputType`
  * - **defaultValue** (number) [optional]: The default number value for the input. Default is the value of the first choice.
  * - **choices** (array): An array of option objects that have the following properties.
  *     - **value** (string) [optional]: The value of the option. Default is its index.
  *     - **name** (string) [optional]: The name of the option. Default is its value.
- * 
+ *
  * ### `imageInputType`
  * - **defaultValue** (string) [optional]: The default url value for the input. Default is an empty string `''`.
  * - **placeholder** (string) [optional]: The placeholder text that appears when the input is empty. Default is `"Enter image here..."`.
@@ -622,7 +631,7 @@ function createSimpleButton(elements, onClick, options = null) {
  * ### `pasteInputType`
  * - **emptyDescription** (string) [optional]: Description text when nothing has been pasted. Default is `'Paste (STRG + V) into here to continue.'`.
  * - **replaceDescription** (string) [optional]: Description text when something has been pasted. Default is `Successfully pasted. Paste (STRG + V) into here to change its content.`.
- * 
+ *
  * ## Returns
  * A content object for the `show` function.
  * */
@@ -665,7 +674,7 @@ function _mapElements(elements) {
  * The element parameter should be created via any of the create functions.
  * For showing multiple elements at once, use a container element.
  * Important: The returned objects are deep copies. They are not updated on input. The updated values must be fetched either via the `onValidate` callback or the `read` function.
- * 
+ *
  * ## Parameters
  * - **element** (object): The `element` parameter accepts an element created via any of the create functions.
  * - **options** (object) [optional]: An object that can have the following properties:
@@ -684,13 +693,13 @@ function _mapElements(elements) {
  *
  * ## Return value when awaited
  *  When this function is awaited, it waits until it the user presses the accept button, or the `accept` function is called on the input. If `noAccept == true`, awaiting it returns an async function that resolves when `accept` is called. Then it returns an object that contains each input element (only input elements), including all nested input elements, from the element parameter with their id as a key. If there is only a single input element, then the element is returned directly instead of as part of an object. If there is no input element, null is returned. Each returned element is an object with the following properties.
- * 
+ *
  * ### For `textInputType`
  * - **text** (string): The text value of the input.
- * 
+ *
  * ### For `codeInputType`
  * - **code** (string): The code value of the input.
- * 
+ *
  * ### For `markdownInputType`
  * - **markdown** (string): The markdown value of the input.
  *
@@ -702,10 +711,10 @@ function _mapElements(elements) {
  *
  * ### For `checkboxInputType`
  * - **checked** (bool): Whether the checkbox was checked.
- * 
+ *
  * ### For `selectInputType`
  * - **value** (string): The selected value.
- * 
+ *
  * ### For `imageInputType`
  * - **url** (string): The url value of the input.
  * - **caption** (string): The caption value of the input.
@@ -772,7 +781,7 @@ async function show(element, options = null) {
 
     let finishedShowingPromiseResolver;
     const finishedShowingPromise = new Promise(resolve => finishedShowingPromiseResolver = resolve);
-    const promise = requireResponse(showEventType, { element, options }, async (content, event) => {
+    const promise = requireResponse(showEventType, {element, options}, async (content, event) => {
         let map = null;
         if (event.type == validateInputEventType) {
             map = onValidateMap;
@@ -790,8 +799,7 @@ async function show(element, options = null) {
         return async () => {
             await promise;
         };
-    }
-    else {
+    } else {
         const response = await promise;
         return inputs.length == 1 ? response[0] : (inputs.length == 0 ? null : _mapElements(response));
     }
@@ -801,14 +809,14 @@ async function show(element, options = null) {
  * If the element is an input element, it returns the current values of the input as described by the `show` function, as well as `isInvalid`, which indicates whether validation failed. It does NOT await user input. Calling this directly after showing something with `noAccept` is pointless.
  */
 async function read(id) {
-    return await requireResponse(readEventType, { id });
+    return await requireResponse(readEventType, {id});
 }
 
 /**
  * Returns the current values of all nested inputs of the element (and itself if it is an input) as described by the `show` function, as well as `isInvalid`. If `id` is null, it returns all elements regardless of their parent.
  */
 async function readAll(id = null) {
-    const inputs = await requireResponse(readEventType, { id, all: true });
+    const inputs = await requireResponse(readEventType, {id, all: true});
     return _mapElements(inputs);
 }
 
@@ -820,21 +828,21 @@ async function readAll(id = null) {
  *     - All return value properties from inputs.
  */
 async function update(id, properties) {
-    await requireResponse(updateEventType, { id, properties });
+    await requireResponse(updateEventType, {id, properties});
 }
 
 /**
  * - **id** (string) [optional]: The id of the element to delete. All nested elements are also deleted. If null, all elements will be deleted instead.
  */
 async function remove(id = null) {
-    await requireResponse(removeEventType, { id });
+    await requireResponse(removeEventType, {id});
 }
 
 /**
  * - **id** (string) [optional]: The id of the top level element to accept input from. This ignores validation. If you want to accept an input with `noAccept == true`, then you need to use this function. If null, all inputs across all top level elements will be accepted instead.
  */
 async function accept(id = null) {
-    await requireResponse(acceptEventType, { id });
+    await requireResponse(acceptEventType, {id});
 }
 
 async function requestFileDownload(name, type, content) {
@@ -878,20 +886,20 @@ async function setStatus(status) {
 class Store {
     // Returns false if the script doesn't have access to a storage.
     static async exists() {
-        return await requireResponse(storageEventType, { exists: true });
+        return await requireResponse(storageEventType, {exists: true});
     }
 
     static async set(key, object) {
-        await requireResponse(storageEventType, { set: { key, value: object } });
+        await requireResponse(storageEventType, {set: {key, value: object}});
     }
 
     // Returns null if the script doesn't have access to a storage. Otherwise the object associated with the key.
     static async get(key) {
-        return await requireResponse(storageEventType, { get: key });
+        return await requireResponse(storageEventType, {get: key});
     }
 
     static async delete(key) {
-        await requireResponse(storageEventType, { delete: key });
+        await requireResponse(storageEventType, {delete: key});
     }
 }
 
@@ -901,7 +909,7 @@ async function getUrl() {
 }
 
 async function fetchTextInternal(path) {
-    return await requireResponse(fetchInternalEventType, { path });
+    return await requireResponse(fetchInternalEventType, {path});
 }
 
 // Internal helper functions
@@ -952,6 +960,26 @@ async function sleep(ms) {
 
 function clone(obj) {
     return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * Executes async function on an iterator of items in parallel and returns their output in an array in the same order as the iterator.
+ *
+ * ## Parameters
+ * - **iterator** (iterator): Iterable object such as an array.
+ * - **asyncFunc** (function): Async function with the following parameters: item, index.
+ * */
+async function parallel(iterator, asyncFunc) {
+    const array = [...iterator];
+    const results = new Array(array.length);
+    const promises = [];
+    const errors = [];
+    array.forEach((item, index) => promises.push(asyncFunc(item, index).then(result => results[index] = result, error => errors.push(error))));
+
+    await Promise.allSettled(promises);
+
+    if (errors.length != 0) throw errors[0];
+    return results;
 }
 
 let commonMimeTypes = {
@@ -1024,26 +1052,31 @@ async function fetchJson(url) {
 }
 
 const second = 1000;
+
 function seconds(seconds) {
     return second * seconds;
 }
 
 const minute = second * 60;
+
 function minutes(minutes) {
     return minute * minutes;
 }
 
 const hour = minute * 60;
+
 function hours(hours) {
     return hour * hours;
 }
 
 const day = hour * 24;
+
 function days(days) {
     return day * days;
 }
 
 const week = day * 24;
+
 function weeks(weeks) {
     return week * weeks;
 }

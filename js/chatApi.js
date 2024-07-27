@@ -4,7 +4,7 @@ class ChatApi {
     static assistantRole = "assistant";
 
     static toMessage(role, content) {
-        return { role, content };
+        return {role, content};
     }
 
     static toSystemMessage(prompt) {
@@ -105,6 +105,10 @@ class ChatApi {
         //ChatApi.claude3_5SonnetIdentifier, // Cors
     ]);
 
+    static modelsThatCantCombineJsonAndStreaming = new Set([
+        ...ChatApi.groqModels.values(),
+    ]);
+
     static getModelName(model) {
         return ChatApi.chatModelNames.get(model) ?? ChatApi.chatModelNames.get(ChatApi.getDefaultModel());
     }
@@ -172,28 +176,6 @@ class ChatApi {
         return newMessages;
     }
 
-    /**
-     * options:
-     * model = null, seed = null, apiKey = null, continueAfterMaxTokens = true, maxTokens = null
-     * 
-     * Returns the full response string.
-     */
-    static async chat(messages, options = null) {
-        options ??= {};
-        options.continueAfterMaxTokens ??= true;
-
-        const messagesCopy = [...messages];
-        let response;
-        let result = '';
-        do {
-            response = await ChatApi._internalGetChatResponse(messages, options);
-            result += response.response;
-            messagesCopy.push(ChatApi.toAssistantMessage(response.response));
-        } while (options.continueAfterMaxTokens && response.finish_reason == 'length');
-
-        return result;
-    }
-
     static async _internalGetChatResponse(messages, options = null) {
         options ??= {};
         const model = options.model ?? ChatApi.getDefaultModel();
@@ -209,9 +191,8 @@ class ChatApi {
             max_tokens: options.maxTokens ?? ChatApi.getMaxTokens(model),
             messages: messagesCopy,
         };
-        if (options.seed != null) {
-            body.seed = options.seed;
-        }
+        if (options.seed != null) body.seed = options.seed;
+        if (options.jsonMode == true) body.response_format = {"type": "json_object"};
 
         let retries = 0;
         let maxRetries = 10;
@@ -230,8 +211,7 @@ class ChatApi {
                     },
                     body: JSON.stringify(body)
                 }).then(response => response.json());
-            }
-            catch (e) {
+            } catch (e) {
                 error = e.message;
                 if (error === "Failed to fetch") {
                     retries -= 1;
@@ -242,11 +222,11 @@ class ChatApi {
             if (json && json['choices'] && json['choices'].length > 0) {
                 console.log('Request:', messagesCopy);
                 console.log('Response:', json);
-                console.log('Response content:', json['choices'][0]['message']['content']);
-                if (openAiSeed) {
-                    console.log('Seed:', openAiSeed, 'Fingerprint:', json.system_fingerprint);
+                console.log('Response content:', json.choices[0].message.content);
+                if (options.seed) {
+                    console.log('Seed:', options.seed, 'Fingerprint:', json.system_fingerprint);
                 }
-                return { response: json['choices'][0]['message'], finish_reason: json.finish_reason };
+                return {response: json.choices[0].message.content, finish_reason: json.finish_reason};
             }
 
             console.log("Json response:", json);
@@ -263,9 +243,33 @@ class ChatApi {
             } else throw lastError;
         }
     }
+
     /**
      * options:
-     * model = null, seed = null, apiKey = null, maxTokens = null
+     * model = null, seed = null, apiKey = null, continueAfterMaxTokens = true, maxTokens = null, jsonMode = false
+     *
+     * Returns the full response string.
+     */
+    static async chat(messages, options = null) {
+        options ??= {};
+        options.continueAfterMaxTokens ??= true;
+
+        const messagesCopy = [...messages];
+        let response;
+        let result = '';
+        do {
+            response = await ChatApi._internalGetChatResponse(messages, options);
+            result += response.response;
+            messagesCopy.push(ChatApi.toAssistantMessage(response.response));
+        } while (options.continueAfterMaxTokens && response.finish_reason == 'length');
+
+
+        return result;
+    }
+
+    /**
+     * options:
+     * model = null, seed = null, apiKey = null, maxTokens = null, jsonMode = false
      */
     static async getChatStream(messages, options = null) {
         options ??= {};
@@ -283,9 +287,8 @@ class ChatApi {
             messages: messagesCopy,
             stream: true
         };
-        if (options.seed != null) {
-            body.seed = options.seed;
-        }
+        if (options.seed != null) body.seed = options.seed;
+        if (options.jsonMode == true) body.response_format = {"type": "json_object"};
 
         let retries = 0;
         let maxRetries = 10;
@@ -304,8 +307,7 @@ class ChatApi {
                     },
                     body: JSON.stringify(body)
                 });
-            }
-            catch (e) {
+            } catch (e) {
                 error = e.message;
                 if (error === "Failed to fetch") {
                     retries -= 1;
@@ -335,33 +337,40 @@ class ChatApi {
 
     /**
      * Fetches and reads a stream. The onUpdate parameter is a function that is called whenever the stream updates. This function has a string parameter of the updated full response string.
-     * 
+     *
      * options:
-     * model = null, seed = null, apiKey = null, stopStream = false, continueAfterMaxTokens = true, maxTokens = null
-     * 
+     * model = null, seed = null, apiKey = null, stopStream = false, continueAfterMaxTokens = true, maxTokens = null, jsonMode = false
+     *
      * Returns the full response string.
      */
     static async streamChat(messages, onUpdate, options) {
         options ??= {};
         options.continueAfterMaxTokens ??= true;
-        console.log("Chat Model:", options.model ?? ChatApi.getDefaultModel());
+        const model = options.model ?? ChatApi.getDefaultModel();
+        console.log("Chat Model:", model);
 
-        const messagesCopy = [...messages];
-        let response;
         let result = '';
-        do {
-            response = await ChatApi._internalStreamChat(messagesCopy, onUpdate, options);
-            result = response.response;
-            messagesCopy.push(ChatApi.toAssistantMessage(response.response));
-        } while (options.continueAfterMaxTokens && response.finish_reason == 'length');
+        console.log("INININININ", model, ChatApi.modelsThatCantCombineJsonAndStreaming.has(model), options.jsonMode);
+        if (options.jsonMode && ChatApi.modelsThatCantCombineJsonAndStreaming.has(model)) {
+            result = await ChatApi.chat(messages, options);
+            await onUpdate(result);
+            return result;
+        } else {
+            const messagesCopy = [...messages];
+            let response;
+            do {
+                response = await ChatApi._internalStreamChat(messagesCopy, onUpdate, options);
+                result = response.response;
+                messagesCopy.push(ChatApi.toAssistantMessage(response.response));
+            } while (options.continueAfterMaxTokens && response.finish_reason == 'length');
+        }
 
         return result;
     }
 
     static async _internalStreamChat(messages, onUpdate, options, previousResponse = null) {
         options ??= {};
-        const streamOptions = { model: options.model, seed: options.seed, apiKey: options.apiKey };
-        let reader = await ChatApi.getChatStream(messages, streamOptions);
+        let reader = await ChatApi.getChatStream(messages, options);
 
         let fullResponse = previousResponse ?? '';
         const textDecoder = new TextDecoder("utf-8");
@@ -375,12 +384,12 @@ class ChatApi {
 
             let value, done;
             try {
-                ({ value, done } = await reader.read());
+                ({value, done} = await reader.read());
             } catch (e) {
                 console.log("Error reading stream:", e.message);
                 if (e.message === "network error") {
                     await sleep((1 + Math.random()) * 1000);
-                    reader = await ChatApi.getChatStream(messages, streamOptions);
+                    reader = await ChatApi.getChatStream(messages, options);
                     fullResponse = previousResponse ?? '';
                     onUpdate('');
                     continue;
@@ -426,7 +435,8 @@ class ChatApi {
                     fullResponse = fullResponse.concat(content);
                     try {
                         onUpdate(fullResponse);
-                    } catch (e) { }
+                    } catch (e) {
+                    }
                 } catch (e) {
                     if (e.message.includes("JSON") && json != null) {
                         buffer += json;
@@ -445,6 +455,6 @@ class ChatApi {
 
         console.log('Request:', messages);
         console.log('Response:', fullResponse);
-        return { response: fullResponse, finish_reason };
+        return {response: fullResponse, finish_reason};
     }
 }

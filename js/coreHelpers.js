@@ -9,16 +9,20 @@ function _tryRemoveIndexHtml() {
         window.history.replaceState(null, "", newUrl);
     }
 }
+
 _tryRemoveIndexHtml();
 
 
 pressedKeys = {};
+
 function onKeyDown(event) {
     pressedKeys[event.key] = true;
 }
+
 function onKeyUp(event) {
     delete pressedKeys[event.key];
 }
+
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 
@@ -147,7 +151,7 @@ function wrapElement(element, wrapper) {
     });
 
     // Start observing the document element for added nodes (the body)
-    observer.observe(document.documentElement, { childList: true, subtree: true });
+    observer.observe(document.documentElement, {childList: true, subtree: true});
 })();
 
 function onBodyCreated(callback) {
@@ -181,7 +185,16 @@ async function fetchJson(url) {
 }
 
 function logStorageSizes() {
-    let _lsTotal = 0, _xLen, _x; for (_x in localStorage) { if (!localStorage.hasOwnProperty(_x)) { continue; } _xLen = ((localStorage[_x].length + _x.length) * 2); _lsTotal += _xLen; console.log(_x.substr(0, 50) + " = " + (_xLen / 1024).toFixed(2) + " KB") }; console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
+    let _lsTotal = 0, _xLen, _x;
+    for (_x in localStorage) {
+        if (!localStorage.hasOwnProperty(_x)) {
+            continue;
+        }
+        _xLen = ((localStorage[_x].length + _x.length) * 2);
+        _lsTotal += _xLen;
+        console.log(_x.substr(0, 50) + " = " + (_xLen / 1024).toFixed(2) + " KB")
+    }
+    ;console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
 }
 
 function replaceElementWithClone(element) {
@@ -202,4 +215,20 @@ function createObjectUrl(object, options = undefined) {
     const blob = new Blob([object], options);
     const blobUrl = URL.createObjectURL(blob);
     return blobUrl;
+}
+
+/**
+ * Executes async function on an iterator of items in parallel and returns their output in an array in the same order as the iterator.
+ * */
+async function parallel(iterator, asyncFunc) {
+    const array = [...iterator];
+    const results = new Array(array.length);
+    const promises = [];
+    const errors = [];
+    array.forEach((item, index) => promises.push(asyncFunc(item, index).then(result => results[index] = result, error => errors.push(error))));
+
+    await Promise.allSettled(promises);
+
+    if (errors.length != 0) throw errors[0];
+    return results;
 }

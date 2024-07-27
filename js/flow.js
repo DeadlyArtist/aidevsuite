@@ -1,6 +1,3 @@
-
-
-
 class Flow {
     static runMode = 'run';
     static editMode = 'edit';
@@ -23,6 +20,7 @@ class Flow {
     static clickEventById = new Map();
 
     static monacoContext = null;
+
     static async setupMonacoContext() {
         if (Flow.mode == Flow.runMode) {
             Flow.clearMonacoContext();
@@ -106,7 +104,7 @@ class Flow {
     static postIframeRequest(content, id = null) {
         //const allowedOrigin = window.location.origin; // Doesn't work because iframe is sandboxed with different origin (null)
         //console.log('IFrame Message Posted:', content);
-        Flow.iframe.contentWindow.postMessage({ message: content, id, source: 'origin' }, '*');
+        Flow.iframe.contentWindow.postMessage({message: content, id, source: 'origin'}, '*');
     }
 
     static requireIframeResponse(content) {
@@ -155,9 +153,9 @@ class Flow {
             };
             return item;
         } else if (name == 'extern') {
-            return (Flow.loadedExternPage?.url == getHashQueryVariable('url') && Flow.loadedExternPage?.url != null) ? Flow.loadedExternPage : { code: '' };
+            return (Flow.loadedExternPage?.url == getHashQueryVariable('url') && Flow.loadedExternPage?.url != null) ? Flow.loadedExternPage : {code: ''};
         } else if (name == 'help') {
-            return (Flow.loadedHelpPage != null) ? Flow.loadedHelpPage : { code: '' };
+            return (Flow.loadedHelpPage != null) ? Flow.loadedHelpPage : {code: ''};
         } else {
             return localPages.get(getPathPartFromHash(1));
         }
@@ -399,11 +397,11 @@ class Flow {
     }
 
     static async destroyWorker() {
-        await Flow.requireIframeResponse({ command: 'terminateWorker' });
+        await Flow.requireIframeResponse({command: 'terminateWorker'});
     }
 
     static async createWorker() {
-        await Flow.requireIframeResponse({ loadWorker: await Flow.getWorkerScript() });
+        await Flow.requireIframeResponse({loadWorker: await Flow.getWorkerScript()});
     }
 
     static async getWorkerScript(forceRefresh = false) {
@@ -576,19 +574,33 @@ class Flow {
 
     // Event logic to communicate with worker
     static _postMessage(message) {
-        Flow.postIframeRequest({ workerCommand: message });
+        Flow.postIframeRequest({workerCommand: message});
     }
 
     static postRequest(type, content, id = null, pingId = null, pingSourceEvent = null) {
-        Flow._postMessage({ id, pingId, pingSourceId: pingSourceEvent?.pingId, type, content });
+        Flow._postMessage({id, pingId, pingSourceId: pingSourceEvent?.pingId, type, content});
     }
 
     static postSuccessResponse(requestEvent, content = null, message = null) {
-        Flow._postMessage({ id: requestEvent.id, type: requestEvent.type, response: true, status: Flow.successStatus, content, message });
+        Flow._postMessage({
+            id: requestEvent.id,
+            type: requestEvent.type,
+            response: true,
+            status: Flow.successStatus,
+            content,
+            message
+        });
     }
 
     static postErrorResponse(requestEvent, message, content = null) {
-        Flow._postMessage({ id: requestEvent.id, type: requestEvent.type, response: true, status: Flow.errorStatus, content, message });
+        Flow._postMessage({
+            id: requestEvent.id,
+            type: requestEvent.type,
+            response: true,
+            status: Flow.errorStatus,
+            content,
+            message
+        });
     }
 
     static requireResponse(type, content, onPing = null, pingSourceEvent = null) {
@@ -685,7 +697,7 @@ class Flow {
     }
 
     static async evalOnWorker(code) {
-        return await Flow.requireResponse(Flow.evalEventType, { code });
+        return await Flow.requireResponse(Flow.evalEventType, {code});
     }
 
     static async onLoadRequest(event) {
@@ -742,7 +754,7 @@ class Flow {
 
     static async onUrlRequest(event) {
         const e = event;
-        Flow.postSuccessResponse(e, { base: getUrlBase() });
+        Flow.postSuccessResponse(e, {base: getUrlBase()});
     }
 
     static async onFetchInternalRequest(event) {
@@ -773,7 +785,7 @@ class Flow {
 
         const response = await Flow.requireResponse(
             delayed ? Flow.delayedValidateInputEventType : Flow.validateInputEventType,
-            { allInputs: inputValues, input: targetInputValue },
+            {allInputs: inputValues, input: targetInputValue},
             null,
             settings.group.event
         );
@@ -809,7 +821,7 @@ class Flow {
         const type = element.type;
         const options = element.options ?? {};
 
-        const settings = { type, id: element.id, group: groupSettings, children: [] };
+        const settings = {type, id: element.id, group: groupSettings, children: []};
         if (options.leftElements) {
             settings.leftChildren = options.leftElements.map(e => Flow.extractSettingsFromElement(e, groupSettings));
             settings.children = settings.children.concat(settings.leftChildren);
@@ -1134,7 +1146,7 @@ class Flow {
             files.push(fileData);
         }
 
-        Flow.updatePaste(settings, { html, text, rtf, files });
+        Flow.updatePaste(settings, {html, text, rtf, files});
     }
 
     static fromElementSettings(settings) {
@@ -1247,7 +1259,12 @@ class Flow {
             const markdownContainer = fromHTML(`<div class="w-100 scroll-y">`);
             if (settings.maxHeight > 0) markdownContainer.classList.add("maxHeight-" + settings.maxHeight);
             if (settings.placeholder != null) markdownContainer.setAttribute('placeholder', settings.placeholder);
-            renderMarkdown(markdownContainer, settings.markdown, { delimiters: settings.katexDelimiters, noHighlight: settings.noHighlight, sanitize: true, katex: settings.katex });
+            renderMarkdown(markdownContainer, settings.markdown, {
+                delimiters: settings.katexDelimiters,
+                noHighlight: settings.noHighlight,
+                sanitize: true,
+                katex: settings.katex
+            });
             settings.markdownElement = markdownContainer;
             const rawTextElement = fromHTML(`<div class="w-100 markdownRawText hide language-markdown scroll-y">`);
             if (settings.maxHeight > 0) rawTextElement.classList.add("maxHeight-" + settings.maxHeight);
@@ -1263,7 +1280,7 @@ class Flow {
             element.appendChild(rawTextElement);
             element.appendChild(bottomBar);
         } else if (type == Flow.htmlType) {
-            settings.url = settings.html ? createObjectUrl(settings.html, { type: commonMimeTypes.html }) : null;
+            settings.url = settings.html ? createObjectUrl(settings.html, {type: commonMimeTypes.html}) : null;
             const iframe = fromHTML(`<iframe sandbox="" class="scroll-y">`);
             if (settings.allowScripts) iframe.setAttribute('sandbox', 'allow-scripts');
             if (settings.maxHeight > 0) {
@@ -1438,7 +1455,12 @@ class Flow {
                 language: "markdown",
                 onInput: e => {
                     Flow.processMonacoInput(settings, 'markdown');
-                    renderMarkdown(settings.markdownElement, settings.markdown, { delimiters: settings.katexDelimiters, noHighlight: settings.noHighlight, sanitize: true, katex: settings.katex });
+                    renderMarkdown(settings.markdownElement, settings.markdown, {
+                        delimiters: settings.katexDelimiters,
+                        noHighlight: settings.noHighlight,
+                        sanitize: true,
+                        katex: settings.katex
+                    });
                 },
                 text: true,
                 placeholder: settings.placeholder,
@@ -1470,7 +1492,12 @@ class Flow {
             const markdownElement = fromHTML(`<div class="w-100 markdownPreview scroll-y" placeholder="Markdown Output">`);
             markdownElement.setAttribute('placeholder', "The Markdown will be rendered here.");
             if (settings.maxHeight > 0) markdownElement.classList.add("maxHeight-" + settings.maxHeight);
-            renderMarkdown(markdownElement, settings.markdown, { delimiters: settings.katexDelimiters, noHighlight: settings.noHighlight, sanitize: true, katex: settings.katex });
+            renderMarkdown(markdownElement, settings.markdown, {
+                delimiters: settings.katexDelimiters,
+                noHighlight: settings.noHighlight,
+                sanitize: true,
+                katex: settings.katex
+            });
             settings.markdownElement = markdownElement;
             outputContainer.appendChild(markdownElement);
             contentContainer.appendChild(outputContainer);
@@ -1661,7 +1688,7 @@ class Flow {
         const inputs = Flow.extractInputElements(groupSettings);
         const inputValues = [];
         for (let settings of inputs) {
-            const value = { id: settings.id, isInvalid: settings.isInvalid };
+            const value = {id: settings.id, isInvalid: settings.isInvalid};
             const type = settings.type;
 
             if (type == Flow.textInputType) {
@@ -1764,7 +1791,12 @@ class Flow {
                 element.appendChild(codeEditorResult.codeEditorContainer);
             } else if (type == Flow.markdownInputType) {
                 const markdownContainer = fromHTML(`<div class="w-100">`);
-                renderMarkdown(markdownContainer, settings.markdown, { delimiters: settings.katexDelimiters, noHighlight: settings.noHighlight, sanitize: true, katex: settings.katex });
+                renderMarkdown(markdownContainer, settings.markdown, {
+                    delimiters: settings.katexDelimiters,
+                    noHighlight: settings.noHighlight,
+                    sanitize: true,
+                    katex: settings.katex
+                });
                 const rawTextContainer = fromHTML(`<div class="w-100 fixText hide language-markdown">`);
                 rawTextContainer.textContent = settings.markdown;
                 highlightCode(rawTextContainer);
@@ -2099,7 +2131,7 @@ class Flow {
         if (properties.html !== undefined) {
             settings.html = properties.html;
             if (settings.url) URL.revokeObjectURL(settings.url);
-            settings.url = settings.html ? createObjectUrl(settings.html, { type: commonMimeTypes.html }) : null;
+            settings.url = settings.html ? createObjectUrl(settings.html, {type: commonMimeTypes.html}) : null;
             if (settings.url) settings.iframe.setAttribute('src', settings.url);
 
             settings.rawTextElement.textContent = settings.html;
@@ -2265,7 +2297,13 @@ class Flow {
             else context.push(ChatApi.toMessage(message.role, message.prompt));
         }
         const options = content.options ?? {};
-        const chatOptions = { model: options.model, seed: options.seed };
+        const chatOptions = {
+            model: options.model,
+            maxTokens: options.maxTokens,
+            continueAfterMaxTokens: options.continueAfterMaxTokens,
+            seed: options.seed,
+            jsonMode: options.jsonMode
+        };
         let settings = Flow.elementById.get(options.id);
 
         let result = '';
@@ -2500,10 +2538,10 @@ class Flow {
                     fileInfo.hasChanged = false;
                     //e.srcElement.value = escapeFileNameMinimal(fileInfo.item.name);
                     nameInputElement.value = fileInfo.item.name = '';
-                }
-                else if (fileInfo.item.link != e.srcElement.value) {
+                } else if (fileInfo.item.link != e.srcElement.value) {
                     fileInfo.hasChanged = true;
-                    fileInfo.item.link = e.srcElement.value = escapeFileNameMinimal(e.srcElement.value);;
+                    fileInfo.item.link = e.srcElement.value = escapeFileNameMinimal(e.srcElement.value);
+                    ;
                     if (fileInfo.item.name.trim() == '') nameInputElement.value = fileInfo.item.name = fileInfo.item.link;
                 }
             });
@@ -2543,7 +2581,7 @@ class Flow {
         element.appendChild(hb(2));
 
         // File drop area
-        Flow.importData = { files: [] };
+        Flow.importData = {files: []};
         const dropArea = fromHTML(`<div class="dropArea" allowed-mime-types="${commonMimeTypes.json}">`);
         dropArea.addEventListener('drop', e => Flow.processImport(e));
         const dropDescriptionElement = fromHTML(`<div>Drag and drop valid .json files.`);
@@ -2586,7 +2624,7 @@ class Flow {
 
     static export() {
         const page = Flow.getPage();
-        const item = { securityId, name: page.name, code: page.code, link: page.link };
+        const item = {securityId, name: page.name, code: page.code, link: page.link};
         const json = JSON.stringify(item);
         let name = item.name;
         const url = getHashQueryVariable('url');
@@ -2646,14 +2684,14 @@ class Flow {
             if (isLinked && url.trim() == '') {
                 deleteLinkedPage(url);
             } else {
-                addLinkedPage(Flow.starData.name, url, { autoRun });
+                addLinkedPage(Flow.starData.name, url, {autoRun});
                 openPage('extern?url=' + url);
             }
         } else {
             if (specialFlowPages.has(name)) {
                 if (Flow.starData.link.trim() != '') {
                     // Add bookmark
-                    addLocalPage(Flow.starData.name, Flow.starData.link, page.code, { autoRun });
+                    addLocalPage(Flow.starData.name, Flow.starData.link, page.code, {autoRun});
                     openPage("local/" + Flow.starData.link);
                 }
             } else {
@@ -2784,8 +2822,7 @@ class Flow {
             if (Flow.starData.link.trim() == '') {
                 Flow.starData.hasChanged = false;
                 nameInputElement.value = Flow.starData.name = '';
-            }
-            else if (Flow.starData.link != e.srcElement.value) {
+            } else if (Flow.starData.link != e.srcElement.value) {
                 Flow.starData.hasChanged = true;
                 Flow.starData.link = e.srcElement.value = escapeFileNameMinimal(e.srcElement.value);
                 if (Flow.starData.name.trim() == '') nameInputElement.value = Flow.starData.name = Flow.starData.link;
@@ -2872,8 +2909,8 @@ class Flow {
     static adjustContentHeight() {
         const type = getPathPartFromHash(0);
         if ((
-            (!Flow.codeEditor && (type == 'local')) ||
-            (!Flow.externTargetElement && (type == 'extern'))) ||
+                (!Flow.codeEditor && (type == 'local')) ||
+                (!Flow.externTargetElement && (type == 'extern'))) ||
             !flowPages.has(type)) return;
 
         const innerContainer = document.getElementById('pages');
