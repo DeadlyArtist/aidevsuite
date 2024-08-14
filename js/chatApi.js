@@ -4,7 +4,7 @@ class ChatApi {
     static assistantRole = "assistant";
 
     static toMessage(role, content) {
-        return {role, content};
+        return { role, content };
     }
 
     static toSystemMessage(prompt) {
@@ -52,7 +52,7 @@ class ChatApi {
     static llama3_1_8bName = "Llama 3.1 8b";
     static claude3_5SonnetName = "Claude 3.5 Sonnet";
 
-    static gpt4OmniIdentifier = "gpt-4o";
+    static gpt4OmniIdentifier = "gpt-4o-2024-08-06";
     static gpt4OmniMiniIdentifier = "gpt-4o-mini";
     static gpt4TurboIdentifier = "gpt-4-turbo";
     static gpt4Identifier = "gpt-4";
@@ -194,7 +194,7 @@ class ChatApi {
             messages: messagesCopy,
         };
         if (options.seed != null) body.seed = options.seed;
-        if (options.jsonMode == true) body.response_format = {"type": "json_object"};
+        if (options.jsonMode == true) body.response_format = { "type": "json_object" };
 
         let retries = 0;
         let maxRetries = 10;
@@ -228,7 +228,7 @@ class ChatApi {
                 if (options.seed) {
                     console.log('Seed:', options.seed, 'Fingerprint:', json.system_fingerprint);
                 }
-                return {response: json.choices[0].message.content, finish_reason: json.finish_reason};
+                return { response: json.choices[0].message.content, finish_reason: json.finish_reason };
             }
 
             console.log("Json response:", json);
@@ -294,7 +294,7 @@ class ChatApi {
             stream: true
         };
         if (options.seed != null) body.seed = options.seed;
-        if (options.jsonMode == true) body.response_format = {"type": "json_object"};
+        if (options.jsonMode == true) body.response_format = { "type": "json_object" };
 
         let retries = 0;
         let maxRetries = 10;
@@ -394,7 +394,7 @@ class ChatApi {
 
             let value, done;
             try {
-                ({value, done} = await reader.read());
+                ({ value, done } = await reader.read());
             } catch (e) {
                 console.log("Error reading stream:", e.message);
                 if (e.message === "network error") {
@@ -465,6 +465,6 @@ class ChatApi {
 
         console.log('Request:', messages);
         console.log('Response:', fullResponse);
-        return {response: fullResponse, finish_reason};
+        return { response: fullResponse, finish_reason };
     }
 }
