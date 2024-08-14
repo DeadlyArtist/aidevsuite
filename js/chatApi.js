@@ -52,7 +52,7 @@ class ChatApi {
     static llama3_1_8bName = "Llama 3.1 8b";
     static claude3_5SonnetName = "Claude 3.5 Sonnet";
 
-    static gpt4OmniIdentifier = "gpt-4o-latest";
+    static gpt4OmniIdentifier = "chatgpt-4o-latest";
     static gpt4OmniMiniIdentifier = "gpt-4o-mini";
     static gpt4TurboIdentifier = "gpt-4-turbo";
     static gpt4Identifier = "gpt-4";

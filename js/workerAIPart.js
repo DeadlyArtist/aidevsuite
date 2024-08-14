@@ -44,7 +44,7 @@ class ChatHelpers {
     static llama3_1_70bName = "Llama 3.1 70b";
     static llama3_1_8bName = "Llama 3.1 8b";
 
-    static gpt4OmniIdentifier = "gpt-4o-latest";
+    static gpt4OmniIdentifier = "chatgpt-4o-latest";
     static gpt4OmniMiniIdentifier = "gpt-4o-mini";
     static gpt4TurboIdentifier = "gpt-4-turbo";
     static gpt4Identifier = "gpt-4";
