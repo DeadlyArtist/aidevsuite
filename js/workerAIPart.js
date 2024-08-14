@@ -14,11 +14,11 @@ async function chat(context, options = null) {
 
     let response;
     if (onUpdate == null) {
-        response = await requireResponse(chatEventType, {context, options});
+        response = await requireResponse(chatEventType, { context, options });
     } else {
         delete options.onUpdate;
         options.hasOnUpdate = true;
-        response = await requireResponse(chatEventType, {context, options}, (content, event) => {
+        response = await requireResponse(chatEventType, { context, options }, (content, event) => {
             const transformed = onUpdate(content);
             postSuccessResponse(event, transformed);
         });
@@ -44,7 +44,7 @@ class ChatHelpers {
     static llama3_1_70bName = "Llama 3.1 70b";
     static llama3_1_8bName = "Llama 3.1 8b";
 
-    static gpt4OmniIdentifier = "gpt-4o";
+    static gpt4OmniIdentifier = "gpt-4o-2024-08-06";
     static gpt4OmniMiniIdentifier = "gpt-4o-mini";
     static gpt4TurboIdentifier = "gpt-4-turbo";
     static gpt4Identifier = "gpt-4";
@@ -71,12 +71,12 @@ class ChatHelpers {
     ]);
 
     static async getAvailableModels() {
-        return requireResponse(chatEventType, {get: 'availableModels'});
+        return requireResponse(chatEventType, { get: 'availableModels' });
     }
 }
 
 function toMessage(role, prompt, url = null) {
-    return {role, prompt, url};
+    return { role, prompt, url };
 }
 
 function toSystemMessage(prompt) {
@@ -95,9 +95,9 @@ function toAssistantMessage(prompt) {
 }
 
 function toImageMessage(url) {
-    return {userRole, prompt: "", url};
+    return { userRole, prompt: "", url };
 }
 
 async function requireApiKey(model = null) {
-    return await requireResponse(requireEventType, {apiKeyFor: model})
+    return await requireResponse(requireEventType, { apiKeyFor: model })
 }
