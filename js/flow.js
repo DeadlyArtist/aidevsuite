@@ -2339,7 +2339,7 @@ class Flow {
 
         const context = [];
         for (let message of content.context) {
-            if (message.url) context.push(ChatApi.ToImageMessage(message.prompt, message.url));
+            if (message.url) context.push(ChatApi.toImageMessage(message.prompt, message.url));
             else context.push(ChatApi.toMessage(message.role, message.prompt));
         }
         const options = content.options ?? {};
