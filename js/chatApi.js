@@ -361,7 +361,6 @@ class ChatApi {
         console.log("Chat Model:", model);
 
         let result = '';
-        console.log("INININININ", model, ChatApi.modelsThatCantCombineJsonAndStreaming.has(model), options.jsonMode);
         if (options.jsonMode && ChatApi.modelsThatCantCombineJsonAndStreaming.has(model)) {
             result = await ChatApi.chat(messages, options);
             await onUpdate(result);

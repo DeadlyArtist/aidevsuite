@@ -2367,6 +2367,9 @@ class Flow {
                 doScrollTick();
 
                 // Stream
+                let timeRef = Date.now();
+                const minTime = second / 5;
+                const maxLength = 10000;
                 result = await ChatApi.streamChat(context, async text => {
                     if (options.hasOnUpdate) {
                         const transformed = await Flow.requireResponse(Flow.chatStreamEventType, text, null, e);
@@ -2390,14 +2393,17 @@ class Flow {
                             if (settings.language != null) highlightCode(settings.streamTarget);
                         } else if (settings.type === Flow.markdownType) {
                             settings.markdown = text;
-                            settings.rawTextElement.textContent = text;
-                            renderMarkdown(settings.markdownElement, text, {
-                                delimiters: settings.katexDelimiters,
-                                noHighlight: settings.noHighlight,
-                                sanitize: true,
-                                katex: settings.katex
-                            });
-                            highlightCode(settings.rawTextElement);
+                            if (isDurationOver(timeRef, minTime) && text.length < maxLength) {
+                                timeRef = Date.now();
+                                settings.rawTextElement.textContent = text;
+                                renderMarkdown(settings.markdownElement, text, {
+                                    delimiters: settings.katexDelimiters,
+                                    noHighlight: settings.noHighlight,
+                                    sanitize: true,
+                                    katex: settings.katex
+                                });
+                                highlightCode(settings.rawTextElement);
+                            }
                         } else if (settings.type === Flow.imageType) {
                             settings.caption = text;
                             settings.captionElement.textContent = text;
@@ -2411,14 +2417,17 @@ class Flow {
                             highlightCode(settings.streamTarget);
                         } else if (settings.type === Flow.markdownInputType) {
                             settings.markdown = text;
-                            renderMarkdown(settings.markdownElement, text, {
-                                delimiters: settings.katexDelimiters,
-                                noHighlight: settings.noHighlight,
-                                sanitize: true,
-                                katex: settings.katex
-                            });
-                            settings.streamTarget.textContent = text;
-                            highlightCode(settings.streamTarget);
+                            if (isDurationOver(timeRef, minTime) && text.length < maxLength) {
+                                timeRef = Date.now();
+                                renderMarkdown(settings.markdownElement, text, {
+                                    delimiters: settings.katexDelimiters,
+                                    noHighlight: settings.noHighlight,
+                                    sanitize: true,
+                                    katex: settings.katex
+                                });
+                                settings.streamTarget.textContent = text;
+                                highlightCode(settings.streamTarget);
+                            }
                         } else if (settings.type === Flow.imageInputType) {
                             settings.caption = text;
                             settings.captionCodeEditor.textContent = text;
@@ -2432,6 +2441,16 @@ class Flow {
                 }, chatOptions);
 
                 settings = Flow.elementById.get(options.id);
+                if (settings?.type === Flow.markdownType) {
+                    settings.rawTextElement.textContent = result;
+                    renderMarkdown(settings.markdownElement, result, {
+                        delimiters: settings.katexDelimiters,
+                        noHighlight: settings.noHighlight,
+                        sanitize: true,
+                        katex: settings.katex
+                    });
+                    highlightCode(settings.rawTextElement);
+                }
                 if (settings != null && (Flow.inputTypes.has(settings.type) || settings.type == Flow.codeType)) {
                     if (settings.type == Flow.imageInputType) {
                         settings.captionCodeEditor.classList.remove('hide');
@@ -2448,12 +2467,14 @@ class Flow {
                             Monaco.replaceCodeWithUndo(settings.codeEditor, result);
                         } else if (settings.type == Flow.markdownInputType) {
                             Monaco.replaceCodeWithUndo(settings.markdownEditor, result);
-                            renderMarkdown(settings.markdownElement, text, {
+                            renderMarkdown(settings.markdownElement, result, {
                                 delimiters: settings.katexDelimiters,
                                 noHighlight: settings.noHighlight,
                                 sanitize: true,
                                 katex: settings.katex
                             });
+                            settings.streamTarget.textContent = result;
+                            highlightCode(settings.streamTarget);
                         }
                     }
                     settings.streamTarget.classList.add('hide');
