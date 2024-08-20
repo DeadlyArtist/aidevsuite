@@ -24,7 +24,7 @@ const flowPages = new Set([
 let localPages = new Map();
 let linkedPages = new Map();
 
-const samples = ['data/Fetch.json', 'data/Simple Chat.json', 'data/Chat.json', 'data/Encoder.json', 'data/Word Counter.json'];
+const samples = ['data/Fetch.json', 'data/Simple Chat.json', 'data/Chat.json', 'data/Encoder.json', 'data/Word Counter.json', 'data/Image To DataURL.json'];
 
 let isUser = false;
 
@@ -106,7 +106,7 @@ async function fetchExternalPage(url) {
     const localIdentifier = '#local/';
     if (url.startsWith(localIdentifier)) {
         const page = localPages.get(url.split(localIdentifier)[1].split('?')[0]);
-        return {code: page.code};
+        return { code: page.code };
     }
 
     const data = await fetchJson(url);
