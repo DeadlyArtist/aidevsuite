@@ -16,10 +16,14 @@
 }
 
 .hljs-string {
-    color: #d27d64;
+  color: #d27d64;
 }
 
 .hljs {
-    color: inherit;
-    background: inherit;
+  color: inherit;
+  background: inherit;
+}
+
+.hljs-subst {
+  color: var(--codeblock-color);
 }
