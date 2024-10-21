@@ -1,5 +1,5 @@
-# aidevsuite
-Automatically and quickly create tools with by hand or with AI. Simple syntax allows quickly iterating through and creating highly specific tools for you or your clients without the need to go through the pain and effort of setting up **yet another website**.
+# aidevsuite (https://deadlyartist.github.io/aidevsuite)
+Automatically and quickly create tools by hand or with AI. Simple syntax allows quickly iterating through and creating highly specific tools for you or your clients without the need to go through the pain and effort of setting up **yet another website**.
 
 Often enough, a small tool is all that is needed, but the effort of creating even the smallest of tools far exceeds the effort of just doing it manually. For example, what if you have 10 strings that are urls with a json encoded in a data property that contains a name property that you need to extract?
 
