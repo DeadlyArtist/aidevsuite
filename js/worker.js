@@ -153,7 +153,7 @@ async function forever() {
 
 // Event logic to communicate with origin
 function postRequest(type, content = null, id = null, pingId = null, pingSourceEvent = null) {
-    postMessage({id, pingId, pingSourceId: pingSourceEvent?.pingId, type, content});
+    postMessage({ id, pingId, pingSourceId: pingSourceEvent?.pingId, type, content });
 }
 
 function postSuccessResponse(requestEvent, content = null, message = null) {
@@ -168,11 +168,11 @@ function postSuccessResponse(requestEvent, content = null, message = null) {
 }
 
 function postErrorResponse(requestEvent, message, content = null) {
-    postMessage({id: requestEvent.id, type: requestEvent.type, response: true, status: errorStatus, content, message});
+    postMessage({ id: requestEvent.id, type: requestEvent.type, response: true, status: errorStatus, content, message });
 }
 
 function postIFrameMessage(type, content = null) {
-    postMessage({iframe: true, type, content});
+    postMessage({ iframe: true, type, content });
 }
 
 function requireResponse(type, content = null, onPing = null, pingSourceEvent = null) {
@@ -219,7 +219,7 @@ const __importErrorCallbacks = new Map();
 function importCode(code) {
     return new Promise((resolve, reject) => {
         const id = generateUniqueId();
-        const blobUrl = createObjectUrl(`async function _____outerImportWrapper_____() {async function _____importWrapper_____() {\n\n\n/* Script starts here */\n${code}\n/* Script ends here */\n\n\n}\ntry{\nawait _____importWrapper_____();\n__importCallbacks.get("${id}")();}\ncatch(e) {\n__importErrorCallbacks.get("${id}")(e);\n}\n}\n_____outerImportWrapper_____();`, {type: commonMimeTypes.javascript});
+        const blobUrl = createObjectUrl(`async function _____outerImportWrapper_____() {async function _____importWrapper_____() {\n\n\n/* Script starts here */\n${code}\n/* Script ends here */\n\n\n}\ntry{\nawait _____importWrapper_____();\n__importCallbacks.get("${id}")();}\ncatch(e) {\n__importErrorCallbacks.get("${id}")(e);\n}\n}\n_____outerImportWrapper_____();`, { type: commonMimeTypes.javascript });
         __importCallbacks.set(id, () => resolve());
         __importErrorCallbacks.set(id, e => reject(e));
         importScripts(blobUrl); // Evaluate the incoming code
@@ -392,7 +392,7 @@ function createCode(code, options = null) {
  *         [
  *             {left: "$$", right: "$$", display: true},
  *             {left: "\\(", right: "\\)", display: false},
- *             //{left: "$", right: "$", display: false} // This single dollar syntax $…$ is disabled, because it ruins the display of normal `$` in text. Use backslash+brackets \(...\) for inline math instead.
+ *             {left: "$", right: "$", display: false} // Uses special rules to prevent normal text from being ruined
  *             {left: "\\begin{equation}", right: "\\end{equation}", display: true},
  *             {left: "\\begin{align}", right: "\\end{align}", display: true},
  *             {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
@@ -783,7 +783,7 @@ async function show(element, options = null) {
 
     let finishedShowingPromiseResolver;
     const finishedShowingPromise = new Promise(resolve => finishedShowingPromiseResolver = resolve);
-    const promise = requireResponse(showEventType, {element, options}, async (content, event) => {
+    const promise = requireResponse(showEventType, { element, options }, async (content, event) => {
         let map = null;
         if (event.type == validateInputEventType) {
             map = onValidateMap;
@@ -811,14 +811,14 @@ async function show(element, options = null) {
  * If the element is an input element, it returns the current values of the input as described by the `show` function, as well as `isInvalid`, which indicates whether validation failed. It does NOT await user input. Calling this directly after showing something with `noAccept` is pointless.
  */
 async function read(id) {
-    return await requireResponse(readEventType, {id});
+    return await requireResponse(readEventType, { id });
 }
 
 /**
  * Returns the current values of all nested inputs of the element (and itself if it is an input) as described by the `show` function, as well as `isInvalid`. If `id` is null, it returns all elements regardless of their parent.
  */
 async function readAll(id = null) {
-    const inputs = await requireResponse(readEventType, {id, all: true});
+    const inputs = await requireResponse(readEventType, { id, all: true });
     return _mapElements(inputs);
 }
 
@@ -830,21 +830,21 @@ async function readAll(id = null) {
  *     - All return value properties from inputs.
  */
 async function update(id, properties) {
-    await requireResponse(updateEventType, {id, properties});
+    await requireResponse(updateEventType, { id, properties });
 }
 
 /**
  * - **id** (string) [optional]: The id of the element to delete. All nested elements are also deleted. If null, all elements will be deleted instead.
  */
 async function remove(id = null) {
-    await requireResponse(removeEventType, {id});
+    await requireResponse(removeEventType, { id });
 }
 
 /**
  * - **id** (string) [optional]: The id of the top level element to accept input from. This ignores validation. If you want to accept an input with `noAccept == true`, then you need to use this function. If null, all inputs across all top level elements will be accepted instead.
  */
 async function accept(id = null) {
-    await requireResponse(acceptEventType, {id});
+    await requireResponse(acceptEventType, { id });
 }
 
 async function requestFileDownload(name, type, content) {
@@ -888,20 +888,20 @@ async function setStatus(status) {
 class Store {
     // Returns false if the script doesn't have access to a storage.
     static async exists() {
-        return await requireResponse(storageEventType, {exists: true});
+        return await requireResponse(storageEventType, { exists: true });
     }
 
     static async set(key, object) {
-        await requireResponse(storageEventType, {set: {key, value: object}});
+        await requireResponse(storageEventType, { set: { key, value: object } });
     }
 
     // Returns null if the script doesn't have access to a storage. Otherwise the object associated with the key.
     static async get(key) {
-        return await requireResponse(storageEventType, {get: key});
+        return await requireResponse(storageEventType, { get: key });
     }
 
     static async delete(key) {
-        await requireResponse(storageEventType, {delete: key});
+        await requireResponse(storageEventType, { delete: key });
     }
 }
 
@@ -911,7 +911,7 @@ async function getUrl() {
 }
 
 async function fetchTextInternal(path) {
-    return await requireResponse(fetchInternalEventType, {path});
+    return await requireResponse(fetchInternalEventType, { path });
 }
 
 // Internal helper functions
