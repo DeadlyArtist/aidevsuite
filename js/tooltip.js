@@ -1,6 +1,7 @@
 class Tooltip {
-    static tooltipAttributes = ['tooltip', 'tooltip-url'];
-    static tooltipQuery = () => Tooltip.tooltipAttributes.map(a => `[${a}]`).join(', ');
+    static tooltipAttributesSet = new Set(['tooltip', 'tooltip-url']);
+    static tooltipAttributes = [];
+    static tooltipQuery = "";
     static cachedHtmlsByUrl = {};
     static fetchPromisesByUrl = {};
     static currentElement = null;
@@ -10,6 +11,11 @@ class Tooltip {
 
     static tooltip = null;
     static tooltipStyle = null;
+
+    static init() {
+        Tooltip.tooltipAttributes = [...Tooltip.tooltipAttributesSet];
+        Tooltip.tooltipQuery = Tooltip.tooltipAttributes.map(a => `[${a}]`).join(', ');
+    }
 
     static setupEventListeners() {
         Tooltip.setupTooltips(document);
@@ -28,7 +34,7 @@ class Tooltip {
                         }
                     });
                 } else if (mutation.type === 'attributes') {
-                    if (mutation.attributeName === 'tooltip' || mutation.attributeName === 'tooltip-url') {
+                    if (Tooltip.tooltipAttributesSet.has(mutation.attributeName)) {
                         if (mutation.target === Tooltip.currentElement) {
                             Tooltip.updateTooltip();
                         }
@@ -37,11 +43,11 @@ class Tooltip {
             }
         });
 
-        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: Tooltip.tooltipAttributes });
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: [...Tooltip.tooltipAttributesSet] });
     }
 
     static setupTooltips(element = document) {
-        const elementsWithTooltip = [...element.querySelectorAll(Tooltip.tooltipQuery())];
+        const elementsWithTooltip = [...element.querySelectorAll(Tooltip.tooltipQuery)];
         for (let elem of elementsWithTooltip) {
             elem.addEventListener('mouseenter', (e) => Tooltip.onMouseenter(e));
             elem.classList.add('tooltipTarget');
@@ -228,6 +234,7 @@ class Tooltip {
         Tooltip.currentElement = null;
     }
 }
+Tooltip.init();
 
 // Initialize Tooltip on script load
 window.addEventListener('load', () => {
