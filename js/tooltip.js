@@ -43,7 +43,7 @@ class Tooltip {
             }
         });
 
-        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: [...Tooltip.tooltipAttributesSet] });
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: Tooltip.tooltipAttributes });
     }
 
     static setupTooltips(element = document) {
@@ -142,8 +142,7 @@ class Tooltip {
             if (Math.abs(elementXCenter - newCenterIfLeft) > Math.abs(elementXCenter - newCenterIfRight)) {
                 // Closer to right than left.
                 currentLeft = window.innerWidth - minDistanceToEdge - tooltipRect.width;
-                console.log("RIGHT", currentLeft, window.innerWidth, minDistanceToEdge, tooltipRect.width);
-            } else console.log("LEFT");
+            }
             Tooltip.tooltip.style.left = currentLeft + 'px';
             let normalLeft = tooltipXLeftFromCenter;
             // (normal left - current left) / width + 50%
@@ -157,9 +156,22 @@ class Tooltip {
 
     static async updateTooltip() {
         const element = Tooltip.currentElement;
-        let tooltipAttribute = element.getAttribute('tooltip');
-        if (tooltipAttribute == null) {
-            let url = element.getAttribute('tooltip-url');
+        let attribute = null;
+        let value = null;
+        for (const attr of Tooltip.tooltipAttributes) {
+            value = element.getAttribute(attr);
+            if (value != null) {
+                attribute = attr;
+                break;
+            }
+        }
+
+        if (attribute == 'tooltip') {
+            Tooltip.tooltip.innerHTML = value;
+            Tooltip.tooltip.classList.add('smallTooltip');
+            Tooltip.tooltip.classList.remove('cardTooltip');
+        } else if (attribute == 'tooltip-url') {
+            let url = value;
             let alreadyLoading = false;
             if (url) {
                 if (Tooltip.fetchPromisesByUrl[url]) {
@@ -186,10 +198,6 @@ class Tooltip {
                 Tooltip.tooltip.classList.remove('smallTooltip');
                 Tooltip.tooltip.classList.add('cardTooltip');
             }
-        } else {
-            Tooltip.tooltip.innerHTML = tooltipAttribute;
-            Tooltip.tooltip.classList.add('smallTooltip');
-            Tooltip.tooltip.classList.remove('cardTooltip');
         }
 
         if (Tooltip.currentElement) {
