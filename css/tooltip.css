@@ -6,11 +6,11 @@
   position: absolute;
   top: 2px;
   z-index: 9999;
-  height: 100%;
-  min-width: 0px;
   border-radius: 10px;
   display: block;
   height: max-content;
+  min-width: 0px;
+  width: max-content;
   max-width: calc(100vw - 12px);
   background-color: var(--tooltip-background-color);
 }
