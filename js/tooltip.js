@@ -167,36 +167,29 @@ class Tooltip {
         }
 
         if (attribute == 'tooltip') {
-            Tooltip.tooltip.innerHTML = value;
-            Tooltip.tooltip.classList.add('smallTooltip');
-            Tooltip.tooltip.classList.remove('cardTooltip');
+            Tooltip.smallTooltip(value);
         } else if (attribute == 'tooltip-url') {
             let url = value;
-            let alreadyLoading = false;
-            if (url) {
-                if (Tooltip.fetchPromisesByUrl[url]) {
-                    alreadyLoading = true;
-                } else {
-                    if (!Tooltip.cachedHtmlsByUrl[url]) {
-                        Tooltip.tooltip.innerHTML = "Loading...";
-                    }
+            if (Tooltip.cachedHtmlsByUrl[url]) {
+                Tooltip.cardTooltip(Tooltip.cachedHtmlsByUrl[url]);
+            } else if (Tooltip.fetchPromisesByUrl[url]) {
+                // do nothing
+            } else {
+                Tooltip.smallTooltip("Loading...");
+
+                Tooltip.fetchPromisesByUrl[url] = (async () => {
                     try {
-                        const fetchPromise = fetch(url);
-                        Tooltip.fetchPromisesByUrl[url] = fetchPromise;
-                        const response = await fetchPromise;
-                        Tooltip.cachedHtmlsByUrl[url] = await response.text();
-                        Tooltip.tooltip.innerHTML = Tooltip.cachedHtmlsByUrl[url];
+                        Tooltip.cachedHtmlsByUrl[url] = await fetchText(url);
                     } catch (e) {
-                        Tooltip.tooltip.innerHTML = "Error loading tooltip.";
+                        if (Tooltip.currentElement == element) {
+                            Tooltip.smallTooltip("Error loading tooltip.");
+                        }
+                        return;
                     }
 
                     delete Tooltip.fetchPromisesByUrl[url];
-                }
-            }
-
-            if (!alreadyLoading) {
-                Tooltip.tooltip.classList.remove('smallTooltip');
-                Tooltip.tooltip.classList.add('cardTooltip');
+                    if (Tooltip.currentElement == element) Tooltip.updateTooltip();
+                })();
             }
         }
 
@@ -204,6 +197,22 @@ class Tooltip {
             Tooltip.tooltip.classList.remove('hide');
             Tooltip.updatePosition();
         }
+    }
+
+    static setTooltip(html) {
+        Tooltip.tooltip.innerHTML = html;
+    }
+
+    static smallTooltip(html) {
+        Tooltip.setTooltip(html);
+        Tooltip.tooltip.classList.add('smallTooltip');
+        Tooltip.tooltip.classList.remove('cardTooltip');
+    }
+
+    static cardTooltip(html) {
+        Tooltip.setTooltip(html);
+        Tooltip.tooltip.classList.remove('smallTooltip');
+        Tooltip.tooltip.classList.add('cardTooltip');
     }
 
     static async onMouseenter(event) {

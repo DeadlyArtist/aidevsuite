@@ -166,10 +166,6 @@ class KatexAutoRender {
         return -1;
     };
 
-    static escapeRegex(string) {
-        return string.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
-    };
-
     static amsRegex = /^\\begin{/;
 
     static splitAtDelimiters(text, delimiters) {
@@ -177,7 +173,7 @@ class KatexAutoRender {
         const data = [];
 
         const regexLeft = new RegExp(
-            "(" + delimiters.map((x) => this.escapeRegex(x.left)).join("|") + ")"
+            "(" + delimiters.map((x) => escapeRegex(x.left)).join("|") + ")"
         );
 
         while (true) {

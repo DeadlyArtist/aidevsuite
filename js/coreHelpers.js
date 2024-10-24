@@ -151,7 +151,7 @@ function wrapElement(element, wrapper) {
     });
 
     // Start observing the document element for added nodes (the body)
-    observer.observe(document.documentElement, {childList: true, subtree: true});
+    observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
 
 function onBodyCreated(callback) {
@@ -175,15 +175,6 @@ function intDivision(a, b) {
     return Math.floor(a / b);
 }
 
-async function fetchText(url) {
-    const response = await fetch(url);
-    return await response.text();
-}
-
-async function fetchJson(url) {
-    return JSON.parse(await fetchText(url));
-}
-
 function logStorageSizes() {
     let _lsTotal = 0, _xLen, _x;
     for (_x in localStorage) {
@@ -194,13 +185,29 @@ function logStorageSizes() {
         _lsTotal += _xLen;
         console.log(_x.substr(0, 50) + " = " + (_xLen / 1024).toFixed(2) + " KB")
     }
-    ;console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
+    ; console.log("Total = " + (_lsTotal / 1024).toFixed(2) + " KB");
 }
 
 function replaceElementWithClone(element) {
     const clone = element.cloneNode(true);
     element.parentNode.replaceChild(clone, element);
     return clone;
+}
+
+function replaceTextNodeWithHTML(node, html) {
+    if (node && node.nodeType === Node.TEXT_NODE) {
+        // Create a temporary container for the new HTML content
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+
+        // Replace the text node with new HTML content
+        while (tempDiv.firstChild) {
+            node.parentNode.insertBefore(tempDiv.firstChild, node);
+        }
+
+        // Remove the original text node
+        node.remove();
+    }
 }
 
 function clamp(number, min, max) {
