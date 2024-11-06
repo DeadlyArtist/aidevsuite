@@ -191,7 +191,7 @@ This uses chatbots like OpenAI ChatGPT or Llama using groq.com (Claude doesn't w
 
 Code is run in a worker from a sandboxed iframe, allowing secure execution of arbitrary code. Both the worker and the iframe are recreated for every code execution.
 
-For security, please do not enter sensitive data into scripts that rely on external code.
+For your security, please do not enter sensitive data into scripts that rely on external code.
 
 ## License
 
@@ -199,4 +199,6 @@ I have not yet settled on a license.
 
 ## Author
 
-Deadly Artist
+[Deadly Artist](https://deadlyartist.com)
+
+See my website for my other projects: https://deadlyartist.com
