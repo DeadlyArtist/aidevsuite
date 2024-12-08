@@ -48,7 +48,7 @@ class ChatApi {
     static gpt4Name = "GPT-4";
     static gpt3_5TurboName = "GPT-3.5 Turbo";
     static llama3_1_405bName = "Llama 3.1 405b";
-    static llama3_1_70bName = "Llama 3.1 70b";
+    static llama3_3_70bName = "Llama 3.3 70b";
     static llama3_1_8bName = "Llama 3.1 8b";
     static claude3_5SonnetName = "Claude 3.5 Sonnet";
 
@@ -58,7 +58,7 @@ class ChatApi {
     static gpt4Identifier = "gpt-4";
     static gpt3_5TurboIdentifier = "gpt-3.5-turbo";
     static llama3_1_405bIdentifier = "llama-3.1-405b-reasoning";
-    static llama3_1_70bIdentifier = "llama-3.1-70b-versatile";
+    static llama3_3_70bIdentifier = "llama-3.3-70b-versatile";
     static llama3_1_8bIdentifier = "llama-3.1-8b-instant";
     static claude3_5SonnetIdentifier = "claude-3-5-sonnet-20240620";
 
@@ -73,7 +73,7 @@ class ChatApi {
         [ChatApi.gpt4Identifier]: ChatApi.gpt4Name,
         [ChatApi.gpt3_5TurboIdentifier]: ChatApi.gpt3_5TurboName,
         //[ChatApi.llama3_1_405bIdentifier]: ChatApi.llama3_1_405bName, // Disabled
-        [ChatApi.llama3_1_70bIdentifier]: ChatApi.llama3_1_70bName,
+        [ChatApi.llama3_3_70bIdentifier]: ChatApi.llama3_3_70bName,
         [ChatApi.llama3_1_8bIdentifier]: ChatApi.llama3_1_8bName,
         // [ChatApi.claude3_5SonnetIdentifier]: ChatApi.claude3_5SonnetName, // Cors
     }
@@ -97,7 +97,7 @@ class ChatApi {
 
     static groqModels = new Set([
         //ChatApi.llama3_1_405bIdentifier, // Disabled
-        ChatApi.llama3_1_70bIdentifier,
+        ChatApi.llama3_3_70bIdentifier,
         ChatApi.llama3_1_8bIdentifier,
     ]);
 

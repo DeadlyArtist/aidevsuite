@@ -41,7 +41,7 @@ class ChatHelpers {
     static gpt4TurboName = "GPT-4 Turbo";
     static gpt4Name = "GPT-4";
     static gpt3_5TurboName = "GPT-3.5 Turbo";
-    static llama3_1_70bName = "Llama 3.1 70b";
+    static llama3_3_70bName = "Llama 3.3 70b";
     static llama3_1_8bName = "Llama 3.1 8b";
 
     static gpt4OmniIdentifier = "chatgpt-4o-latest";
@@ -49,13 +49,13 @@ class ChatHelpers {
     static gpt4TurboIdentifier = "gpt-4-turbo";
     static gpt4Identifier = "gpt-4";
     static gpt3_5TurboIdentifier = "gpt-3.5-turbo";
-    static llama3_1_70bIdentifier = "llama-3.1-70b-versatile";
+    static llama3_3_70bIdentifier = "llama-3.3-70b-versatile";
     static llama3_1_8bIdentifier = "llama-3.1-8b-instant";
 
     static chatModelNames = {
         [this.gpt4OmniIdentifier]: this.gpt4OmniName,
         [this.gpt4OmniMiniIdentifier]: this.gpt4OmniMiniName,
-        [this.llama3_1_70bIdentifier]: this.llama3_1_70bName,
+        [this.llama3_3_70bIdentifier]: this.llama3_3_70bName,
         [this.llama3_1_8bIdentifier]: this.llama3_1_8bName,
         [this.gpt4TurboIdentifier]: this.gpt4TurboName,
         [this.gpt4Identifier]: this.gpt4Name,
