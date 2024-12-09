@@ -382,7 +382,6 @@ class ChatApi {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
-                    stream: true,
                 });
             } catch (e) {
                 error = e.message;
@@ -478,8 +477,8 @@ class ChatApi {
                 }
             }
             if (done) break;
-            const chunk = textDecoder.decode(value);
 
+            const chunk = textDecoder.decode(value);
             for (const line of chunk.split("\n")) {
                 if (options.stopStream) {
                     break;

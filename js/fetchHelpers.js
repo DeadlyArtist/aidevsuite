@@ -50,7 +50,7 @@ let defaultProxyAuthorizationHeader = "x-api-key";
 function createProxy(proxyUrl, settings = null) {
     settings ??= {};
     settings.proxyAuthHeader ??= defaultProxyAuthorizationHeader;
-    const { apiKey = null, request = {}, proxyAuthHeader } = settings;
+    const { apiKey = null, request = {}, proxyAuthHeader, stream = null } = settings;
 
     return async function (targetUrl, proxyRequestOptions = {}) {
         const proxyRequestBody = {
@@ -62,7 +62,9 @@ function createProxy(proxyUrl, settings = null) {
             },
             body: proxyRequestOptions.body || request.body || null,
         };
-
+        let streamOverride = proxyRequestOptions.stream ?? stream;
+        if (streamOverride != null) proxyRequestBody.stream = streamOverride;
+        console.log(streamOverride, settings, proxyRequestOptions, proxyRequestBody);
         const options = {
             method: "POST",
             headers: {
@@ -77,6 +79,14 @@ function createProxy(proxyUrl, settings = null) {
 
         if (!response.ok) {
             throw new Error(`Proxy error: ${response.status} ${response.statusText}`);
+        }
+
+        // Detect if the response is a stream (e.g., "text/event-stream" or other types)
+        const responseContentType = response.headers.get("Content-Type")?.toLowerCase() || "";
+
+        // Skip parsing JSON if it's a stream; just return the raw response
+        if (proxyRequestOptions.stream || responseContentType.includes("text/event-stream") || responseContentType.includes("application/octet-stream")) {
+            return response; // Raw streaming response
         }
 
         // Parse the JSON response from the proxy
