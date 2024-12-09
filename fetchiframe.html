@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Secure Fetch Iframe</title>
+</head>
+<body>
+<script>
+    const allowedOrigin = window.location.origin;
+
+    function postResponseToParent(requestEvent, responseData, isError = false) {
+        window.parent.postMessage({
+            id: requestEvent.data.id,
+            response: true,
+            success: !isError,
+            data: responseData,
+            source: "iframe"
+        }, allowedOrigin);
+    }
+
+    async function handleFetchRequest(event, requestDetails) {
+        try {
+            const { url, options } = requestDetails;
+
+            if (!url) throw new Error("Invalid URL.");
+            if (options?.method && !["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"].includes(options.method.toUpperCase())) {
+                throw new Error("Invalid HTTP method.");
+            }
+
+            const response = await fetch(url, options || {});
+            const responseBody = await response.text();
+
+            const responseDetails = {
+                status: response.status,
+                statusText: response.statusText,
+                headers: [...response.headers.entries()],
+                body: responseBody,
+            };
+
+            postResponseToParent(event, responseDetails);
+        } catch (error) {
+            postResponseToParent(event, { error: error.message }, true);
+        }
+    }
+
+    window.addEventListener("message", async (event) => {
+        if (event.origin !== allowedOrigin) return;
+        const { source, id, message } = event.data;
+        if (source !== "origin" || !id || !message.fetchRequest) return;
+
+        await handleFetchRequest(event, message.fetchRequest);
+    });
+
+    window.parent.postMessage({ message: "iframe-ready", source: "iframe" }, allowedOrigin);
+</script>
+</body>
+</html>

@@ -45,3 +45,55 @@ async function fetchTextWithCache(url) {
 async function fetchJsonWithCache(url) {
     return JSON.parse(await fetchTextWithCache(url));
 }
+
+let defaultProxyAuthorizationHeader = "x-api-key";
+function createProxy(proxyUrl, settings = null) {
+    settings ??= {};
+    settings.proxyAuthHeader ??= defaultProxyAuthorizationHeader;
+    const { apiKey = null, request = {}, proxyAuthHeader } = settings;
+
+    return async function (targetUrl, proxyRequestOptions = {}) {
+        const proxyRequestBody = {
+            url: targetUrl,
+            method: proxyRequestOptions.method || request.method || "GET",
+            headers: {
+                ...(request.headers || {}),
+                ...(proxyRequestOptions.headers || {}),
+            },
+            body: proxyRequestOptions.body || request.body || null,
+        };
+
+        const options = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(proxyRequestBody),
+        };
+
+        if (apiKey != null) options.headers[proxyAuthHeader] = apiKey;
+
+        const response = await fetch(proxyUrl, options);
+
+        if (!response.ok) {
+            throw new Error(`Proxy error: ${response.status} ${response.statusText}`);
+        }
+
+        // Parse the JSON response from the proxy
+        const proxyResponse = await response.json();
+
+        // Create and return a fake Response object using the `proxyResponse`
+        const headers = new Headers(proxyResponse.headers);
+        const { status, content } = proxyResponse;
+
+        return new Response(content, {
+            status: status,
+            headers: headers
+        });
+    };
+}
+
+async function proxy(targetUrl, proxyUrl, settings = null) {
+    return await createProxy(proxyUrl, settings)(targetUrl);
+}
+

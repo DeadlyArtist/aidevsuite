@@ -1,4 +1,6 @@
 class Flow {
+    static log = !!window.location.port;
+
     static runMode = 'run';
     static editMode = 'edit';
     static isRunning = false;
@@ -70,7 +72,7 @@ class Flow {
         if (event.data.source == 'worker') {
             Flow.onWorkerMessage(data);
         } else if (event.data.source == 'iframe') {
-            if (!event.data.response) console.log('IFrame Message Received:', data ?? event);
+            if (Flow.log && !event.data.response) console.log('IFrame Message Received:', data ?? event);
             Flow.onIframeEvent.get(event.data.id)?.(event.data);
         }
     }
@@ -96,7 +98,6 @@ class Flow {
                 reject(new Error('Failed to load iframe'));
             };
 
-            // Append the iframe to the document body
             iframeContainer.appendChild(iframe);
         });
     }
@@ -118,6 +119,60 @@ class Flow {
 
 
             Flow.postIframeRequest(content, id);
+        });
+    }
+
+    static async setupFetchIframe() {
+        return new Promise((resolve, reject) => {
+            resolve();
+            return;
+
+            Flow.iframe?.remove();
+
+            const iframeContainer = document.getElementById("fetchiframeContainer");
+
+            // Create the iframe element
+            const iframe = fromHTML(`<iframe id="sandbox" sandbox="allow-scripts" src="fetchiframe.html" style="display:none;">`);
+
+            Flow.fetchiframe = iframe;
+
+            // Resolve the promise when the iframe is loaded
+            iframe.onload = () => {
+                resolve(iframe);
+            };
+
+            // Reject the promise if there's an error loading the iframe
+            iframe.onerror = () => {
+                reject(new Error('Failed to load iframe'));
+            };
+
+            iframeContainer.appendChild(iframe);
+        });
+    }
+
+    static sendIframedFetchRequest(url, options) {
+        return new Promise((resolve, reject) => {
+            const requestId = generateUniqueId();
+
+            function handleIframeResponse(event) {
+                if (event.origin !== Flow.fetchiframe.src) return;
+
+                const { id, response, success, data } = event.data;
+                if (response && id === requestId) {
+                    window.removeEventListener("message", handleIframeResponse);
+                    success ? resolve(data) : reject(new Error(data.error || "Unknown error occurred"));
+                }
+            }
+
+            window.addEventListener("message", handleIframeResponse);
+
+            iframe.contentWindow.postMessage({
+                id: requestId,
+                source: "origin",
+                message: {
+                    fetchRequest: { url, options }
+                }
+            }, iframe.src);
         });
     }
 
@@ -261,6 +316,7 @@ class Flow {
         }
 
         Flow.setStatus("Booting up...");
+        await Flow.setupFetchIframe();
         await Flow.setupIframe();
 
         Flow.executeCode();
@@ -472,6 +528,7 @@ class Flow {
     static storageEventType = "storageEventType";
     static urlEventType = "urlEventType";
     static fetchInternalEventType = "fetchInternalEventType";
+    static proxyEventType = "proxyEventType";
     static requireEventType = "requireEventType";
 
     // Element types
@@ -645,7 +702,7 @@ class Flow {
     static onWorkerMessage(event) {
         const e = event;
         const type = e.type;
-        if (type !== Flow.logEventType) console.log("Worker Message Received:", event);
+        if (Flow.log && type !== Flow.logEventType) console.log("Worker Message Received:", event);
 
         try {
             if (Flow.onEvent.has(e.id)) {
@@ -684,6 +741,8 @@ class Flow {
                 Flow.onUrlRequest(e);
             } else if (type === Flow.fetchInternalEventType) {
                 Flow.onFetchInternalRequest(e);
+            } else if (type === Flow.proxyEventType) {
+                Flow.onProxy(e);
             } else if (type === Flow.requireEventType) {
                 Flow.onRequire(e);
             }
@@ -701,7 +760,7 @@ class Flow {
             const contentArray = JSON.parse(e.content);
 
             if (Array.isArray(contentArray)) {
-                console.log("Worker Log:", ...contentArray);
+                if (Flow.log || contentArray.length == 0 || contentArray[0] != "Origin Message Received:") console.log("Worker Log:", ...contentArray);
             } else {
                 console.log("Worker Log:", contentArray);
             }
@@ -788,6 +847,21 @@ class Flow {
         }
     }
 
+    static async onProxy(event) {
+        const e = event;
+        const content = e.content;
+
+        if (content.get == 'has') {
+            let has = Settings.hasProxy();
+            Flow.postSuccessResponse(e, has);
+            return;
+        } else if (content.get === 'fetch') {
+            // Security risk, as malicious scripts can easily find out proxy data, including your api key.
+        }
+
+        return;
+    }
+
     static async onRequire(event) {
         const e = event;
         const content = e.content;
@@ -799,6 +873,15 @@ class Flow {
                 hasApiKey = ChatApi.getApiKey(content.apiKeyFor);
                 if (!hasApiKey) {
                     error = 'api_key_missing';
+                }
+            }
+        } else if (content.proxy !== undefined) {
+            let hasProxy = Settings.hasProxy();
+            if (!hasProxy) {
+                await Settings.open();
+                hasProxy = Settings.hasProxy();
+                if (!hasProxy) {
+                    error = 'proxy_missing';
                 }
             }
         }
@@ -2080,7 +2163,7 @@ class Flow {
         const inputs = Flow.extractInputElements(settings);
 
         await Flow.spliceOutput(insertAt, options.deleteAfter, settings);
-        console.log(Flow.output[Flow.output.length - 1]);
+        if (Flow.log) console.log(Flow.output[Flow.output.length - 1]);
         if (options.deleteBefore > 0) {
             await Flow.spliceOutput(insertAt - options.deleteBefore, options.deleteBefore);
         }
@@ -2325,7 +2408,7 @@ class Flow {
 
         if (content.get != null) {
             if (content.get == 'availableModels') {
-                const models = ChatApi.getSortedModels(ChatApi.getAvailableModels());
+                const models = ChatApi.getSortedModels(ChatApi.getAvailableModels(Settings.hasProxy()));
                 Flow.postSuccessResponse(e, models);
             }
             return;
@@ -2336,6 +2419,18 @@ class Flow {
             Flow.postErrorResponse(e, 'api_key_missing');
             return;
         }
+
+        let hasProxy = Settings.hasProxy();
+        let requiresProxy = ChatApi.requiresProxy(content.options?.model);
+        if (requiresProxy && !hasProxy) {
+            await Settings.open();
+            if (!Settings.hasProxy()) {
+                Flow.setStatus('Required Proxy was missing.', true);
+                Flow.postErrorResponse(e, 'proxy_missing');
+                return;
+            }
+        }
+        let customFetch = UserProxy.fetchProvider(requiresProxy);
 
         const context = [];
         for (let message of content.context) {
@@ -2348,7 +2443,8 @@ class Flow {
             maxTokens: options.maxTokens,
             continueAfterMaxTokens: options.continueAfterMaxTokens,
             seed: options.seed,
-            jsonMode: options.jsonMode
+            jsonMode: options.jsonMode,
+            fetchOverride: customFetch,
         };
         let settings = Flow.elementById.get(options.id);
 

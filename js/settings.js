@@ -19,6 +19,9 @@ class Settings {
         const chatbotPage = fromHTML(`<div class="divList gap-2 hide">`);
         chatbotPage.setAttribute('settings-page', Settings.chatbotPage);
 
+        const aiHeader = fromHTML(`<h3>AI`);
+        chatbotPage.appendChild(aiHeader);
+
         const groqNote = fromHTML(`<div>`);
         renderMarkdown(groqNote, '_Note: Groq currently (23.07.2024) allows [creating API keys for free](https://console.groq.com/keys)._');
         chatbotPage.appendChild(groqNote);
@@ -52,6 +55,19 @@ class Settings {
         openAIApiKeySetting.appendChild(openAIApiKeyElement);
         chatbotPage.appendChild(openAIApiKeySetting);
 
+        // Google Api key
+        const googleApiKeySetting = fromHTML(`<div class="listHorizontal">`);
+        const googleApiKeyLabel = fromHTML(`<div>Google Api Key`);
+        googleApiKeySetting.appendChild(googleApiKeyLabel);
+        const googleApiKeyElement = fromHTML(`<input type="password" placeholder="Enter api key...">`);
+        googleApiKeyElement.value = settings.googleApiKey ?? '';
+        googleApiKeyElement.addEventListener('input', e => {
+            settings.googleApiKey = googleApiKeyElement.value;
+            Settings.checkHasApiKey();
+        });
+        googleApiKeySetting.appendChild(googleApiKeyElement);
+        chatbotPage.appendChild(googleApiKeySetting);
+
         // Groq Api key
         const groqApiKeySetting = fromHTML(`<div class="listHorizontal">`);
         const groqApiKeyLabel = fromHTML(`<div>Groq Api Key`);
@@ -64,18 +80,71 @@ class Settings {
         groqApiKeySetting.appendChild(groqApiKeyElement);
         chatbotPage.appendChild(groqApiKeySetting);
 
-        // // Anthropic Api key
-        // const anthropicApiKeySetting = fromHTML(`<div class="listHorizontal">`);
-        // const anthropicApiKeyLabel = fromHTML(`<div>Anthropic Api Key`);
-        // anthropicApiKeySetting.appendChild(anthropicApiKeyLabel);
-        // const anthropicApiKeyElement = fromHTML(`<input type="password" placeholder="Enter api key...">`);
-        // anthropicApiKeyElement.value = settings.anthropicApiKey;
-        // anthropicApiKeyElement.addEventListener('input', e => {
-        //     settings.anthropicApiKey = anthropicApiKeyElement.value;
-        //     Settings.checkHasApiKey();
-        // });
-        // anthropicApiKeySetting.appendChild(anthropicApiKeyElement);
-        // chatbotPage.appendChild(anthropicApiKeySetting);
+        // Anthropic Api key
+        const anthropicApiKeySetting = fromHTML(`<div class="listHorizontal">`);
+        const anthropicApiKeyLabel = fromHTML(`<div>Anthropic Api Key`);
+        anthropicApiKeySetting.appendChild(anthropicApiKeyLabel);
+        const anthropicApiKeyElement = fromHTML(`<input type="password" placeholder="Enter api key...">`);
+        anthropicApiKeyElement.value = settings.anthropicApiKey;
+        anthropicApiKeyElement.addEventListener('input', e => {
+            settings.anthropicApiKey = anthropicApiKeyElement.value;
+            Settings.checkHasApiKey();
+        });
+        anthropicApiKeySetting.appendChild(anthropicApiKeyElement);
+        chatbotPage.appendChild(anthropicApiKeySetting);
+
+        chatbotPage.appendChild(hb(2));
+        const proxyHeader = fromHTML(`<h3>Proxy`);
+        chatbotPage.appendChild(proxyHeader);
+
+        // Proxy Api Url
+        const proxyApiUrlSetting = fromHTML(`<div tooltip="Set this to allow scripts to use a proxy if needed." class="listHorizontal">`);
+        const proxyApiUrlLabel = fromHTML(`<div>Proxy Api Url`);
+        proxyApiUrlSetting.appendChild(proxyApiUrlLabel);
+        const proxyApiUrlElement = fromHTML(`<input type="text" placeholder="Enter api url...">`);
+        proxyApiUrlElement.value = settings.proxyApiUrl ?? '';
+        proxyApiUrlElement.addEventListener('input', e => {
+            settings.proxyApiUrl = proxyApiUrlElement.value;
+        });
+        proxyApiUrlSetting.appendChild(proxyApiUrlElement);
+        chatbotPage.appendChild(proxyApiUrlSetting);
+
+        // Proxy Auth Header
+        const proxyApiHeaderSetting = fromHTML(`<div tooltip="Set this to allow scripts to use a proxy if needed." class="listHorizontal">`);
+        const proxyApiHeaderLabel = fromHTML(`<div>Proxy Auth Header`);
+        proxyApiHeaderSetting.appendChild(proxyApiHeaderLabel);
+        const proxyApiHeaderElement = fromHTML(`<input type="text">`);
+        proxyApiHeaderElement.setAttribute('placeholder', defaultProxyAuthorizationHeader);
+        proxyApiHeaderElement.value = settings.proxyApiHeader ?? '';
+        proxyApiHeaderElement.addEventListener('input', e => {
+            settings.proxyApiHeader = proxyApiHeaderElement.value;
+        });
+        proxyApiHeaderSetting.appendChild(proxyApiHeaderElement);
+        chatbotPage.appendChild(proxyApiHeaderSetting);
+
+        // Proxy Api Key
+        const proxyApiKeySetting = fromHTML(`<div tooltip="Set this if your proxy requires an api key (Proxy-Authorization header)." class="listHorizontal">`);
+        const proxyApiKeyLabel = fromHTML(`<div>Proxy Api Key`);
+        proxyApiKeySetting.appendChild(proxyApiKeyLabel);
+        const proxyApiKeyElement = fromHTML(`<input type="password" placeholder="Enter api key...">`);
+        proxyApiKeyElement.value = settings.proxyApiKey ?? '';
+        proxyApiKeyElement.addEventListener('input', e => {
+            settings.proxyApiKey = proxyApiKeyElement.value;
+        });
+        proxyApiKeySetting.appendChild(proxyApiKeyElement);
+        chatbotPage.appendChild(proxyApiKeySetting);
+
+        // Disable Proxy
+        const disableScriptOverrideSetting = fromHTML(`<div tooltip="Denies the requests of scripts to use a proxy." class="listHorizontal">`);
+        const disableScriptOverrideLabel = fromHTML(`<div>Disable Proxy`);
+        disableScriptOverrideSetting.appendChild(disableScriptOverrideLabel);
+        const disableScriptOverrideElement = fromHTML(`<input type="checkbox">`);
+        disableScriptOverrideElement.checked = settings.disableScriptOverride;
+        disableScriptOverrideElement.addEventListener('input', async e => {
+            settings.disableScriptOverride = disableScriptOverrideElement.checked;
+        });
+        disableScriptOverrideSetting.appendChild(disableScriptOverrideElement);
+        chatbotPage.appendChild(disableScriptOverrideSetting);
 
         return chatbotPage;
     }
@@ -146,6 +215,10 @@ class Settings {
 
     static close() {
         if (Settings.element) Settings.element.remove();
+    }
+
+    static hasProxy() {
+        return !settings.disableScriptOverride && settings.proxyApiUrl;
     }
 }
 

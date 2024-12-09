@@ -38,28 +38,46 @@ class ChatHelpers {
 
     static gpt4OmniName = "GPT-4 Omni";
     static gpt4OmniMiniName = "GPT-4 Omni Mini";
-    static gpt4TurboName = "GPT-4 Turbo";
-    static gpt4Name = "GPT-4";
-    static gpt3_5TurboName = "GPT-3.5 Turbo";
+    static gpt4TurboName = "GPT-4 Turbo (Outdated)";
+    static gpt4Name = "GPT-4 (Outdated)";
+    static gpt3_5TurboName = "GPT-3.5 Turbo (Outdated)";
+    static geminiExperimentalName = "Gemini Experimental";
+    static gemini1_5ProName = "Gemini 1.5 Pro";
+    static gemini1_5FlashName = "Gemini 1.5 Flash";
+    static gemini1_5Flash8bName = "Gemini 1.5 Flash-8b";
     static llama3_3_70bName = "Llama 3.3 70b";
     static llama3_1_8bName = "Llama 3.1 8b";
+    static claude3_5SonnetName = "Claude 3.5 Sonnet";
+    static claude3_5HaikuName = "Claude 3.5 Haiku";
 
     static gpt4OmniIdentifier = "chatgpt-4o-latest";
     static gpt4OmniMiniIdentifier = "gpt-4o-mini";
     static gpt4TurboIdentifier = "gpt-4-turbo";
     static gpt4Identifier = "gpt-4";
     static gpt3_5TurboIdentifier = "gpt-3.5-turbo";
+    static geminiExperimentalIdentifier = "gemini-exp-1206";
+    static gemini1_5ProIdentifier = "gemini-1.5-pro-latest";
+    static gemini1_5FlashIdentifier = "gemini-1.5-flash-latest";
+    static gemini1_5Flash8bIdentifier = "gemini-1.5-flash-8b-latest";
     static llama3_3_70bIdentifier = "llama-3.3-70b-versatile";
     static llama3_1_8bIdentifier = "llama-3.1-8b-instant";
+    static claude3_5SonnetIdentifier = "claude-3-5-sonnet-latest";
+    static claude3_5HaikuIdentifier = "claude-3-5-haiku-latest";
 
     static chatModelNames = {
         [this.gpt4OmniIdentifier]: this.gpt4OmniName,
         [this.gpt4OmniMiniIdentifier]: this.gpt4OmniMiniName,
+        [this.geminiExperimentalIdentifier]: this.geminiExperimentalName,
+        [this.gemini1_5ProIdentifier]: this.gemini1_5ProName,
+        [this.gemini1_5FlashIdentifier]: this.gemini1_5FlashName,
+        [this.gemini1_5Flash8bIdentifier]: this.gemini1_5Flash8bName,
         [this.llama3_3_70bIdentifier]: this.llama3_3_70bName,
         [this.llama3_1_8bIdentifier]: this.llama3_1_8bName,
         [this.gpt4TurboIdentifier]: this.gpt4TurboName,
         [this.gpt4Identifier]: this.gpt4Name,
         [this.gpt3_5TurboIdentifier]: this.gpt3_5TurboName,
+        [this.claude3_5SonnetIdentifier]: this.claude3_5SonnetName,
+        [this.claude3_5HaikuIdentifier]: this.claude3_5HaikuName,
     }
 
     static chatModels = new Set(Object.keys(this.chatModelNames));
@@ -68,6 +86,12 @@ class ChatHelpers {
         this.gpt4OmniIdentifier,
         this.gpt4OmniMiniIdentifier,
         this.gpt4TurboIdentifier,
+        this.geminiExperimentalIdentifier,
+        this.gemini1_5ProIdentifier,
+        this.gemini1_5FlashIdentifier,
+        this.gemini1_5Flash8bIdentifier,
+        this.claude3_5SonnetIdentifier,
+        this.claude3_5HaikuIdentifier,
     ]);
 
     static async getAvailableModels() {
