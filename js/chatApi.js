@@ -498,7 +498,7 @@ class ChatApi {
                         try {
                             obj = JSON.parse(json);
                             if (!obj.choices) throw new Error();
-                            console.warn("Failed resolving chunk split error. Skipped data:", buffer);
+                            if (buffer.trim() != "data:") console.warn("Failed resolving chunk split error. Skipped data:", buffer);
                         } catch (e) {
                             let fullData = buffer + json;
                             if (fullData.startsWith('data: ')) fullData = fullData.replace("data: ", "");
