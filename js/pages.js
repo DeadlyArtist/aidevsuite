@@ -381,3 +381,4 @@ function getHelpPage() {
 // Listen for hashchange events
 window.addEventListener('hashchange', loadPage);
 window.addEventListener('load', loadPage);
+window.addEventListener('popstate', loadPage);
