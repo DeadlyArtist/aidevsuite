@@ -49,6 +49,7 @@ class ChatApi {
     static gpt4Name = "GPT-4 (Outdated)";
     static gpt3_5TurboName = "GPT-3.5 Turbo (Outdated)";
     static geminiExperimentalName = "Gemini Experimental";
+    static gemini2_0FlashName = "Gemini 2.0 Flash";
     static gemini1_5ProName = "Gemini 1.5 Pro";
     static gemini1_5FlashName = "Gemini 1.5 Flash";
     static gemini1_5Flash8bName = "Gemini 1.5 Flash-8b";
@@ -64,6 +65,7 @@ class ChatApi {
     static gpt4Identifier = "gpt-4";
     static gpt3_5TurboIdentifier = "gpt-3.5-turbo";
     static geminiExperimentalIdentifier = "gemini-exp-1206";
+    static gemini2_0FlashIdentifier = "gemini-2.0-flash-exp";
     static gemini1_5ProIdentifier = "gemini-1.5-pro-latest";
     static gemini1_5FlashIdentifier = "gemini-1.5-flash-latest";
     static gemini1_5Flash8bIdentifier = "gemini-1.5-flash-8b-latest";
@@ -85,6 +87,7 @@ class ChatApi {
         [ChatApi.gpt4Identifier]: ChatApi.gpt4Name,
         [ChatApi.gpt3_5TurboIdentifier]: ChatApi.gpt3_5TurboName,
         [ChatApi.geminiExperimentalIdentifier]: ChatApi.geminiExperimentalName,
+        [ChatApi.gemini2_0FlashIdentifier]: ChatApi.gemini2_0FlashName,
         [ChatApi.gemini1_5ProIdentifier]: ChatApi.gemini1_5ProName,
         [ChatApi.gemini1_5FlashIdentifier]: ChatApi.gemini1_5FlashName,
         [ChatApi.gemini1_5Flash8bIdentifier]: ChatApi.gemini1_5Flash8bName,
@@ -103,6 +106,7 @@ class ChatApi {
         ChatApi.gpt4TurboIdentifier,
         ChatApi.claude3_5SonnetIdentifier,
         ChatApi.geminiExperimentalIdentifier,
+        ChatApi.gemini2_0FlashIdentifier,
         ChatApi.gemini1_5ProIdentifier,
         ChatApi.gemini1_5FlashIdentifier,
         ChatApi.gemini1_5Flash8bIdentifier,
@@ -120,6 +124,7 @@ class ChatApi {
 
     static googleModels = new Set([
         ChatApi.geminiExperimentalIdentifier,
+        ChatApi.gemini2_0FlashIdentifier,
         ChatApi.gemini1_5ProIdentifier,
         ChatApi.gemini1_5FlashIdentifier,
         ChatApi.gemini1_5Flash8bIdentifier,
@@ -210,6 +215,7 @@ class ChatApi {
         if (modelSet.delete(ChatApi.gpt4OmniMiniIdentifier)) sortedModels.push(ChatApi.gpt4OmniMiniIdentifier);
         if (modelSet.delete(ChatApi.gemini1_5ProIdentifier)) sortedModels.push(ChatApi.gemini1_5ProIdentifier);
         if (modelSet.delete(ChatApi.geminiExperimentalIdentifier)) sortedModels.push(ChatApi.geminiExperimentalIdentifier);
+        if (modelSet.delete(ChatApi.gemini2_0FlashIdentifier)) sortedModels.push(ChatApi.gemini2_0FlashIdentifier);
         if (modelSet.delete(ChatApi.gemini1_5FlashIdentifier)) sortedModels.push(ChatApi.gemini1_5FlashIdentifier);
         if (modelSet.delete(ChatApi.gemini1_5Flash8bIdentifier)) sortedModels.push(ChatApi.gemini1_5Flash8bIdentifier);
         if (modelSet.delete(ChatApi.claude3_5SonnetIdentifier)) sortedModels.push(ChatApi.claude3_5SonnetIdentifier);

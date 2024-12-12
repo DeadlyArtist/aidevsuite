@@ -42,6 +42,7 @@ class ChatHelpers {
     static gpt4Name = "GPT-4 (Outdated)";
     static gpt3_5TurboName = "GPT-3.5 Turbo (Outdated)";
     static geminiExperimentalName = "Gemini Experimental";
+    static gemini2_0FlashName = "Gemini 2.0 Flash";
     static gemini1_5ProName = "Gemini 1.5 Pro";
     static gemini1_5FlashName = "Gemini 1.5 Flash";
     static gemini1_5Flash8bName = "Gemini 1.5 Flash-8b";
@@ -56,6 +57,7 @@ class ChatHelpers {
     static gpt4Identifier = "gpt-4";
     static gpt3_5TurboIdentifier = "gpt-3.5-turbo";
     static geminiExperimentalIdentifier = "gemini-exp-1206";
+    static gemini2_0FlashIdentifier = "gemini-2.0-flash-exp";
     static gemini1_5ProIdentifier = "gemini-1.5-pro-latest";
     static gemini1_5FlashIdentifier = "gemini-1.5-flash-latest";
     static gemini1_5Flash8bIdentifier = "gemini-1.5-flash-8b-latest";
@@ -68,6 +70,7 @@ class ChatHelpers {
         [this.gpt4OmniIdentifier]: this.gpt4OmniName,
         [this.gpt4OmniMiniIdentifier]: this.gpt4OmniMiniName,
         [this.geminiExperimentalIdentifier]: this.geminiExperimentalName,
+        [this.gemini2_0FlashIdentifier]: this.gemini2_0FlashName,
         [this.gemini1_5ProIdentifier]: this.gemini1_5ProName,
         [this.gemini1_5FlashIdentifier]: this.gemini1_5FlashName,
         [this.gemini1_5Flash8bIdentifier]: this.gemini1_5Flash8bName,
@@ -87,6 +90,7 @@ class ChatHelpers {
         this.gpt4OmniMiniIdentifier,
         this.gpt4TurboIdentifier,
         this.geminiExperimentalIdentifier,
+        this.gemini2_0FlashIdentifier,
         this.gemini1_5ProIdentifier,
         this.gemini1_5FlashIdentifier,
         this.gemini1_5Flash8bIdentifier,
