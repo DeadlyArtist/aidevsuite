@@ -64,7 +64,7 @@ function createProxy(proxyUrl, settings = null) {
         };
         let streamOverride = proxyRequestOptions.stream ?? stream;
         if (streamOverride != null) proxyRequestBody.stream = streamOverride;
-        console.log(streamOverride, settings, proxyRequestOptions, proxyRequestBody);
+
         const options = {
             method: "POST",
             headers: {
