@@ -3,17 +3,33 @@ input {
     border: 1px solid var(--border-color);
     border-radius: 5px;
     background: inherit;
+    font-size: 1rem;
+    font-family: inherit;
+    min-width: 0;
 }
 
 ::placeholder {
     font-style: italic;
     color: var(--placeholder-color);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 .validationMessage {
     color: var(--danger-color);
     font-style: italic;
     font-size: 0.8rem;
+}
+
+input:focus-visible {
+    outline: 0;
+    border-color: var(--border-color);
+}
+
+input[type="search"] {
+    width: 100%;
+    padding: 6px 12px;
 }
 
 input[type="number"] {
@@ -31,36 +47,37 @@ input[type=checkbox], input[type=checkbox]:checked {
     -moz-appearance: none;
     -webkit-appearance: none;
     -o-appearance: none;
+    appearance: none;
 }
 
 input[type=checkbox] {
-    position: relative;
     background-color: var(--background-color);
-    border-radius: 5px;
-    height: 16px;
-    width: 16px;
     cursor: pointer;
     margin: 0;
     line-height: 1;
+
+    width: 1em;
+    height: 1em;
+    border: 1px solid var(--border-color);
+    border-radius: 0.15em;
+    display: grid;
+    place-content: center;
 }
 
 input[type=checkbox]:hover {
     background-color: var(--raised-background-color);
 }
 
-input[type=checkbox]:checked {
-    background-color: var(--text-color);
+input[type="checkbox"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    transform: scale(0);
+    box-shadow: inset 1em 1em var(--text-color);
+    transform-origin: bottom left;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
 }
 
-/* Create the checkmark/indicator (hidden when not checked) */
-input[type=checkbox]:checked::after {
-    content: url('data:image/svg+xml; utf8, <svg xmlns="http://www.w3.org/2000/svg" height="17px" viewBox="0 -960 960 960" fill="var(--background-color)"><path d="m382-393 321-321q20.09-20 48.55-20Q780-734 800-714.21q20 19.79 20 48.5T800-617L430-248q-19.82 20-47.91 20Q354-228 334-248L161-420q-20-20.73-20-48.87Q141-497 160.79-517q20.79-21 49-21T258-517l124 124Z"/></svg>');
-    display: block;
-    position: absolute;
-    left: -1.0px;
-    top: -1.1px;
-}
-
-.checkboxContainer {
-    line-height: 1;
+input[type="checkbox"]:checked::before {
+    transform: scale(1);
 }
