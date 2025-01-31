@@ -3236,7 +3236,10 @@ function getFlowPage() {
             });
             contentContainer.appendChild(codeEditorResult.codeEditorContainer);
             Flow.codeEditorContainerElement = codeEditorResult.codeEditorContainer;
-            codeEditorResult.codeEditorPromise.then(e => Flow.codeEditor = e);
+            codeEditorResult.codeEditorPromise.then(e => {
+                Flow.codeEditor = e;
+                Flow.adjustContentHeight();
+            });
             Flow.codeEditorPromise = codeEditorResult.codeEditorPromise;
         }
 
@@ -3260,7 +3263,10 @@ function getFlowPage() {
             if (name != 'extern' || Flow.loadedExternPage?.url != newUrl || newUrl == null) externCodeResult.codeEditorContainer.classList.add('hide');
             contentContainer.appendChild(externCodeResult.codeEditorContainer);
             Flow.externContainerElement = externCodeResult.codeEditorContainer;
-            externCodeResult.codeEditorPromise.then(e => Flow.externTargetElement = e);
+            externCodeResult.codeEditorPromise.then(e => {
+                Flow.externTargetElement = e;
+                Flow.adjustContentHeight();
+            });
             Flow.externCodeEditorPromise = externCodeResult.codeEditorPromise;
             contentContainer.appendChild(hb(4));
         }
@@ -3278,7 +3284,10 @@ function getFlowPage() {
             promptEditorContainer.classList.add('promptContainer');
             if (settings.disableAI) promptEditorContainer.classList.add('hide');
             elements.push(promptEditorContainer);
-            promptEditorResult.codeEditorPromise.then(e => Flow.promptEditor = e);
+            promptEditorResult.codeEditorPromise.then(e => {
+                Flow.promptEditor = e;
+                Flow.adjustContentHeight();
+            });
             Flow.promptEditorPromise = promptEditorResult.codeEditorPromise;
             const footer = fromHTML(`<div class="listContainerHorizontal contenteditableContainerFooter">`);
             footer.appendChild(fromHTML(`<div>`));

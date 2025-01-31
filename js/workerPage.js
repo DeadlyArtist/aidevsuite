@@ -46,7 +46,10 @@ function getWorkerPage() {
         showMinimap: true,
     });
     WorkerPage.codeEditorContainer = codeResult.codeEditorContainer;
-    codeResult.codeEditorPromise.then(e => WorkerPage.codeEditor = e);
+    codeResult.codeEditorPromise.then(e => {
+        WorkerPage.codeEditor = e;
+        WorkerPage.adjustContentHeight();
+    });
     content.appendChild(codeResult.codeEditorContainer);
     Flow.getWorkerScript().then(async code => {
         const editor = await codeResult.codeEditorPromise;
