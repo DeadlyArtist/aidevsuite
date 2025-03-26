@@ -364,6 +364,7 @@ class ChatApi {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(body),
+                    stream: true,
                 });
             } catch (e) {
                 error = e.message;
