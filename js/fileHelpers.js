@@ -75,3 +75,11 @@ function getFileNameFromUrl(url) {
     const fileName = dotSplit.join(".");
     return fileName;
 }
+
+async function getDataURL(file) {
+    return await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+    })
+}

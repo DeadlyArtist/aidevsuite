@@ -27,3 +27,8 @@
 .hljs-subst {
   color: var(--codeblock-color);
 }
+
+.hljs-bullet,
+.hljs-code {
+  color: inherit;
+}

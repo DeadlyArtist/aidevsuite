@@ -8,7 +8,7 @@ class KatexHelpers {
             if (data[i].type === "text") {
                 result += replaceMathParts ? data[i].data : escapeHTML(data[i].data);
             } else {
-                const mathPart = {id: 'MATHPART' + generateUniqueId(), html: ''};
+                const mathPart = { id: 'MATHPART' + generateUniqueId(), html: '' };
                 mathPart += `<span>`;
                 let math = escapeHTML(data[i].data);
                 // Override any display mode defined in the settings with that
@@ -37,7 +37,7 @@ class KatexHelpers {
             }
         }
 
-        if (replaceMathParts) return {result, mathParts};
+        if (replaceMathParts) return { result, mathParts };
         else return result;
     };
 
@@ -72,20 +72,20 @@ class KatexHelpers {
 
         // default options
         optionsCopy.delimiters = optionsCopy.delimiters || [
-            {left: "$$", right: "$$", display: true},
-            {left: "\\(", right: "\\)", display: false},
-            // LaTeX uses $…$, but it ruins the display of normal `$` in text:
-            // {left: "$", right: "$", display: false},
+            { left: "$$", right: "$$", display: true },
+            { left: "\\(", right: "\\)", display: false },
+            // (FIXED) LaTeX uses $…$, but it ruins the display of normal `$` in text:
+            { left: "$", right: "$", display: false },
             // $ must come after $$
 
             // Render AMS environments even if outside $$…$$ delimiters.
-            {left: "\\begin{equation}", right: "\\end{equation}", display: true},
-            {left: "\\begin{align}", right: "\\end{align}", display: true},
-            {left: "\\begin{alignat}", right: "\\end{alignat}", display: true},
-            {left: "\\begin{gather}", right: "\\end{gather}", display: true},
-            {left: "\\begin{CD}", right: "\\end{CD}", display: true},
+            { left: "\\begin{equation}", right: "\\end{equation}", display: true },
+            { left: "\\begin{align}", right: "\\end{align}", display: true },
+            { left: "\\begin{alignat}", right: "\\end{alignat}", display: true },
+            { left: "\\begin{gather}", right: "\\end{gather}", display: true },
+            { left: "\\begin{CD}", right: "\\end{CD}", display: true },
 
-            {left: "\\[", right: "\\]", display: true},
+            { left: "\\[", right: "\\]", display: true },
         ];
         optionsCopy.errorCallback = optionsCopy.errorCallback || console.error;
 
@@ -99,7 +99,7 @@ class KatexHelpers {
         if (!str || str.length === 0) {
             return '';
         }
-        
+
         const optionsCopy = this.getOptionsCopy(options);
         return this.getMathHtmlRaw(str, optionsCopy);
     };
@@ -133,16 +133,6 @@ class KatexHelpers {
         return -1;
     };
 
-    static removeCodeBlocks(str) {
-        // Remove inline code blocks
-        str = str.replace(/`.*?`/g, '');
-
-        // Remove full (multiline) code blocks
-        str = str.replace(/```[\s\S]*?```/g, '');
-
-        return str;
-    }
-
     static escapeRegex(string) {
         return string.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&");
     };
@@ -150,26 +140,13 @@ class KatexHelpers {
     static amsRegex = /^\\begin{/;
 
     static splitAtDelimiters(text, delimiters) {
-        // Placeholder maps
-        let codeBlocks = [];
-        let placeholderIndex = 0;
-
-        // Temporarily replace full code blocks
-        text = text.replace(/```[\s\S]*?```/g, (match) => {
-            let placeholder = `__BLOCK_CODE_BLOCK_PLACEHOLDER_9x91n2w87x87z127t7wtnx761t2_${placeholderIndex++}__`;
-            codeBlocks.push({placeholder, codeBlock: match});
-            return placeholder;
-        });
-
-        // Temporarily replace inline code blocks
-        text = text.replace(/`.*?`/gs, (match) => {
-            if (match.includes('\n')) return match;
-            let placeholder = `__INLINE_CODE_BLOCK_PLACEHOLDER_vuk09cm2u9839nc9239cz9zm28_${placeholderIndex++}__`;
-            codeBlocks.push({placeholder, codeBlock: match});
-            return placeholder;
-        });
-
-
+        // Temporarily replace code blocks
+        let codes = ParsingHelpers.extractCodeInfo(text);
+        codes.sort((a, b) => b.start - a.start)
+        for (let [index, code] of Object.entries(codes)) {
+            code.placeholder = `__CODE_BLOCK_PLACEHOLDER_9x91n2w87x87z127t7wtnx761t2_${index}__`;
+            text = replaceSubstring(text, code.start, code.end, code.placeholder);
+        }
 
         let index;
         const data = [];
@@ -219,10 +196,10 @@ class KatexHelpers {
 
         // Restore code blocks in the final data array using placeholders
         data.forEach(part => {
-            codeBlocks.forEach(codeBlock => {
-                part.data = part.data.replace(codeBlock.placeholder, function () {return codeBlock.codeBlock}); // function to escape $
+            codes.forEach(code => {
+                part.data = part.data.replace(code.placeholder, function () { return code.code }); // function to escape $
                 if (part.rawData) {
-                    part.rawData = part.rawData.replace(codeBlock.placeholder, function () {return codeBlock.codeBlock}); // function to escape $
+                    part.rawData = part.rawData.replace(code.placeholder, function () { return code.code }); // function to escape $
                 }
             });
         });

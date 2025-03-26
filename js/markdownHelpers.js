@@ -104,6 +104,33 @@ class MarkdownHelpers {
 
         return codeBar;
     }
+
+    static _readdCodeblocks(element, codeBlocks) {
+        let walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
+        let textNodes = [];
+
+        while (walker.nextNode()) {
+            textNodes.push(walker.currentNode);
+        }
+
+        textNodes.forEach(textNode => {
+            let updatedText = escapeHTML(textNode.nodeValue);
+            let modified = false;
+
+            codeBlocks.forEach(code => {
+                updatedText = updatedText.replace(escapeHTML(code.placeholder), function () {
+                    modified = true;
+                    let classPart = '';
+                    if (code.language) classPart = ` class="language-${escapeHTML(code.language)}"`;
+                    return `<pre><code${classPart}>${escapeHTML(code.content)}</code></pre>`;
+                });
+            });
+
+            if (modified) {
+                replaceTextNodeWithHTML(textNode, updatedText);
+            }
+        });
+    }
 }
 
 window.addEventListener('load', e => MarkdownHelpers.setup());
@@ -126,6 +153,15 @@ function renderMarkdown(element, markdown, options = null) {
     if (options.katex) markdown = KatexHelpers.escapeMathFromMarkdown(markdown);
     if (options.noHighlight) MarkdownHelpers.highlightExtensionEnabled = false;
     else MarkdownHelpers.highlightExtensionEnabled = true;
+
+    // Temporarily replace code blocks
+    let codeBlocks = ParsingHelpers.extractCodeInfo(markdown, true);
+    codeBlocks.sort((a, b) => b.start - a.start)
+    for (let [index, code] of Object.entries(codeBlocks)) {
+        code.placeholder = `__CODE_BLOCK_PLACEHOLDER_nvcr79vTLCNRoxvuisvusekvmsa92_${index}__`;
+        markdown = replaceSubstring(markdown, code.start, code.end, escapeMarkdown(code.placeholder));
+    }
+
     // Render markdown
     let html = marked.parse(markdown);
     if (!html.trim()) {
@@ -142,6 +178,8 @@ function renderMarkdown(element, markdown, options = null) {
         element.innerHTML = '';
         return;
     }
+    for (let child of children) MarkdownHelpers._readdCodeblocks(child, codeBlocks);
+
     MarkdownHelpers.adjustMarkedOuput(...children);
     for (let child of children) {
         if (options.katex) renderMathInElement(child);

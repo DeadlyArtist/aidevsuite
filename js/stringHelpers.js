@@ -121,3 +121,7 @@ function getStringByteSize(string) {
 function addIndent(string, spaces = 4) {
     return string.split('\n').map(l => ' '.repeat(spaces) + l).join('\n');
 }
+
+function replaceSubstring(original, start, end, placeholder) {
+    return original.slice(0, start) + placeholder + original.slice(end == null ? end : end + 1);
+}

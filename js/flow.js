@@ -501,6 +501,7 @@ class Flow {
 
     static onEvent = new Map();
     static onPingEvent = new Map();
+    static streamingChatOptions = new Map();
 
     // Event status types
     static successStatus = 'successStatus';
@@ -1070,6 +1071,7 @@ class Flow {
                 settings.maxHeight = clamp(options.maxHeight ?? 6, 0, 8);
                 settings.imageMaxHeight = clamp(options.imageMaxHeight ?? 0, 0, 8);
                 settings.captionMaxHeight = clamp(options.captionMaxHeight ?? 6, 0, 8);
+                settings.allowImagePasting = options.allowImagePasting ?? true;
             } else if (type === Flow.fileInputType) {
                 settings.files = [];
                 settings.allowedMimeTypes = options.allowedMimeTypes ?? [];
@@ -1156,11 +1158,7 @@ class Flow {
             lastModified: file.lastModified,
             lastModifiedDate: file.lastModifiedDate,
             text: await file.text(),
-            dataURL: await new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.readAsDataURL(file);
-            })
+            dataURL: await getDataURL(file),
         };
 
         return fileData;
@@ -1656,6 +1654,21 @@ class Flow {
             codeEditor.addEventListener('input', e => {
                 Flow.processContentEditableInput(e.srcElement, settings, 'url');
                 settings.imgElement.setAttribute('src', settings.url);
+            });
+            codeEditor.addEventListener('paste', async (e) => {
+                if (!settings.allowImagePasting) return;
+
+                const clipboardItems = (e.clipboardData || window.clipboardData).items;
+                for (const item of clipboardItems) {
+                    if (item.type.startsWith('image/')) {
+                        e.preventDefault();
+                        const file = item.getAsFile();
+                        const dataURL = await getDataURL(file);
+                        settings.text = dataURL;
+                        InputHelpers.replaceTextWithUndo(codeEditor, settings.text);
+                        break;
+                    }
+                }
             });
             codeEditor.addEventListener('keydown', e => ContentEditableHelpers.checkForTab(e));
             contentContainer.appendChild(codeEditor);
@@ -2403,6 +2416,13 @@ class Flow {
         const e = event;
         const content = e.content;
 
+        if (content.stop != null) {
+            let options = Flow.streamingChatOptions.get(content.stop);
+            if (options != null) options.stopStream = true;
+            Flow.postSuccessResponse(e);
+            return;
+        }
+
         const needsApiKey = ChatApi.getApiKey(content.options?.model) == null;
         if (needsApiKey) await Settings.open();
 
@@ -2448,6 +2468,7 @@ class Flow {
         };
         let settings = Flow.elementById.get(options.id);
 
+        Flow.streamingChatOptions.set(e.id, chatOptions);
         let result = '';
         try {
             if (options.hasOnUpdate || settings != null) {
@@ -2581,9 +2602,11 @@ class Flow {
             }
 
             doScrollTick();
+            Flow.streamingChatOptions.delete(e.id);
             Flow.postSuccessResponse(e, result);
         } catch (error) {
             console.log(error.stack);
+            Flow.streamingChatOptions.delete(e.id);
             Flow.postErrorResponse(e, "chat_error");
         }
     }

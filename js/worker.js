@@ -176,9 +176,10 @@ function postIFrameMessage(type, content = null) {
     postMessage({ iframe: true, type, content });
 }
 
-function requireResponse(type, content = null, onPing = null, pingSourceEvent = null) {
+function requireResponse(type, content = null, onPing = null, pingSourceEvent = null, eventIdRetriever = null) {
     return new Promise((resolve, reject) => {
         const id = generateUniqueId();
+        if (eventIdRetriever != null) eventIdRetriever(id);
         let pingId = null;
         if (onPing != null) {
             pingId = generateUniqueId();
@@ -621,6 +622,7 @@ function createSimpleButton(elements, onClick, options = null) {
  * - **maxHeight** (number) [optional]: Must be between `0` and `8`. For no max height use `0`. Default is `6`.
  * - **captionMaxHeight** (number) [optional]: Must be between `0` and `8`. For no max height use `0`. Default is `6`.
  * - **imageMaxHeight** (number) [optional]: Must be between `0` and `8`. For no max height use `0`. Default is `0`.
+ * - **allowImagePasting** (bool) [optional]: Whether the user can paste an image as dataURL. Default is `true`.
  *
  * ### `fileInputType`
  * - **allowedMimeTypes** (array of strings) [optional]: Specifies the mime types (e.g application/json) that are allowed. Wildcards are supported. Default is an empty array `[]`.

@@ -201,8 +201,8 @@ class KatexAutoRender {
 
             // https://github.com/KaTeX/KaTeX/pull/3926/commits/6bb264663577e618c4ce6b1405cec62722c8d8d0
             let previousData = data.slice(-1).pop(),
-                // Treat current data as plain text if previous data ends with any words or any numbers with optional space after them
-                currentData = previousData && /(\w|\b[+-]?\d+([,.]\d+)*\s*)$/.test(previousData.data) && rawData[0] === '$' ? {
+                // ($ fix) Treat current data as plain text if previous data ends with any non white space character or any numbers with optional space after them
+                currentData = rawData.trim().length == 0 || (previousData && /(\S|\b[+-]?\d+([,.]\d+)*\s*)$/.test(previousData.data) && rawData[0] === '$') ? {
                     type: "text",
                     data: rawData,
                 } : {
@@ -212,8 +212,8 @@ class KatexAutoRender {
                     display: delimiters[i].display,
                 };
             text = text.slice(index + delimiters[i].right.length);
-            // Treat current data as plain text if next data starts with any words or any numbers with optional space after them
-            if (currentData.type === "math" && /^(\w|\s*[+-]?\d+([,.]\d+)*\b)/.test(text) && currentData.rawData[0] === '$') {
+            // ($ fix) Treat current data as plain text if next data starts with any non white space character or any numbers with optional space after them
+            if (currentData.type === "math" && /^(\S|\s*[+-]?\d+([,.]\d+)*\b)/.test(text) && currentData.rawData[0] === '$') {
                 currentData.type = "text";
                 currentData.data = currentData.rawData;
                 delete currentData.display;

@@ -45,15 +45,10 @@ class ChatApi {
 
     static gpt4OmniName = "GPT-4 Omni";
     static gpt4OmniMiniName = "GPT-4 Omni Mini";
-    static gpt4TurboName = "GPT-4 Turbo (Outdated)";
-    static gpt4Name = "GPT-4 (Outdated)";
-    static gpt3_5TurboName = "GPT-3.5 Turbo (Outdated)";
-    static geminiExperimentalName = "Gemini Experimental";
+    static gemini2_5ProExperimentalName = "Gemini 2.5 Pro Experimental";
     static gemini2_0FlashName = "Gemini 2.0 Flash";
-    static gemini1_5ProName = "Gemini 1.5 Pro";
-    static gemini1_5FlashName = "Gemini 1.5 Flash";
-    static gemini1_5Flash8bName = "Gemini 1.5 Flash-8b";
-    static llama3_1_405bName = "Llama 3.1 405b";
+    static gemini2_0FlashLiteName = "Gemini 2.0 Flash Lite";
+    static qwen_qwq32bName = "QwQ 32b";
     static llama3_3_70bName = "Llama 3.3 70b";
     static llama3_1_8bName = "Llama 3.1 8b";
     static claude3_5SonnetName = "Claude 3.5 Sonnet";
@@ -61,37 +56,27 @@ class ChatApi {
 
     static gpt4OmniIdentifier = "chatgpt-4o-latest";
     static gpt4OmniMiniIdentifier = "gpt-4o-mini";
-    static gpt4TurboIdentifier = "gpt-4-turbo";
-    static gpt4Identifier = "gpt-4";
-    static gpt3_5TurboIdentifier = "gpt-3.5-turbo";
-    static geminiExperimentalIdentifier = "gemini-exp-1206";
-    static gemini2_0FlashIdentifier = "gemini-2.0-flash-exp";
-    static gemini1_5ProIdentifier = "gemini-1.5-pro-latest";
-    static gemini1_5FlashIdentifier = "gemini-1.5-flash-latest";
-    static gemini1_5Flash8bIdentifier = "gemini-1.5-flash-8b-latest";
-    static llama3_1_405bIdentifier = "llama-3.1-405b-reasoning";
+    static gemini2_5ProExperimentalIdentifier = "gemini-2.5-pro-exp-03-25";
+    static gemini2_0FlashIdentifier = "gemini-2.0-flash";
+    static gemini2_0FlashLiteIdentifier = "gemini-2.0-flash-lite";
+    static qwen_qwq32bIdentifier = "qwen-qwq-32b";
     static llama3_3_70bIdentifier = "llama-3.3-70b-versatile";
     static llama3_1_8bIdentifier = "llama-3.1-8b-instant";
     static claude3_5SonnetIdentifier = "claude-3-5-sonnet-latest";
     static claude3_5HaikuIdentifier = "claude-3-5-haiku-latest";
 
     static defaultGptModel = ChatApi.gpt4OmniIdentifier;
-    static defaultGoogleModel = ChatApi.gemini1_5ProIdentifier;
-    static defaultGroqModel = ChatApi.llama3_3_70bIdentifier;
+    static defaultGoogleModel = ChatApi.gemini2_5ProExperimentalIdentifier;
+    static defaultGroqModel = ChatApi.qwen_qwq32bIdentifier;
     static defaultAnthropicModel = ChatApi.claude3_5SonnetIdentifier;
 
     static chatModelNames = {
         [ChatApi.gpt4OmniIdentifier]: ChatApi.gpt4OmniName,
         [ChatApi.gpt4OmniMiniIdentifier]: ChatApi.gpt4OmniMiniName,
-        [ChatApi.gpt4TurboIdentifier]: ChatApi.gpt4TurboName,
-        [ChatApi.gpt4Identifier]: ChatApi.gpt4Name,
-        [ChatApi.gpt3_5TurboIdentifier]: ChatApi.gpt3_5TurboName,
-        [ChatApi.geminiExperimentalIdentifier]: ChatApi.geminiExperimentalName,
+        [ChatApi.gemini2_5ProExperimentalIdentifier]: ChatApi.gemini2_5ProExperimentalName,
         [ChatApi.gemini2_0FlashIdentifier]: ChatApi.gemini2_0FlashName,
-        [ChatApi.gemini1_5ProIdentifier]: ChatApi.gemini1_5ProName,
-        [ChatApi.gemini1_5FlashIdentifier]: ChatApi.gemini1_5FlashName,
-        [ChatApi.gemini1_5Flash8bIdentifier]: ChatApi.gemini1_5Flash8bName,
-        //[ChatApi.llama3_1_405bIdentifier]: ChatApi.llama3_1_405bName, // Disabled
+        [ChatApi.gemini2_0FlashLiteIdentifier]: ChatApi.gemini2_0FlashLiteName,
+        [ChatApi.qwen_qwq32bIdentifier]: ChatApi.qwen_qwq32bName,
         [ChatApi.llama3_3_70bIdentifier]: ChatApi.llama3_3_70bName,
         [ChatApi.llama3_1_8bIdentifier]: ChatApi.llama3_1_8bName,
         [ChatApi.claude3_5SonnetIdentifier]: ChatApi.claude3_5SonnetName,
@@ -103,13 +88,10 @@ class ChatApi {
     static chatModelsThatAllowImages = new Set([
         ChatApi.gpt4OmniIdentifier,
         ChatApi.gpt4OmniMiniIdentifier,
-        ChatApi.gpt4TurboIdentifier,
         ChatApi.claude3_5SonnetIdentifier,
-        ChatApi.geminiExperimentalIdentifier,
+        ChatApi.gemini2_5ProExperimentalIdentifier,
         ChatApi.gemini2_0FlashIdentifier,
-        ChatApi.gemini1_5ProIdentifier,
-        ChatApi.gemini1_5FlashIdentifier,
-        ChatApi.gemini1_5Flash8bIdentifier,
+        ChatApi.gemini2_0FlashLiteIdentifier,
         ChatApi.claude3_5SonnetIdentifier,
         ChatApi.claude3_5HaikuIdentifier,
     ]);
@@ -117,21 +99,16 @@ class ChatApi {
     static gptModels = new Set([
         ChatApi.gpt4OmniIdentifier,
         ChatApi.gpt4OmniMiniIdentifier,
-        ChatApi.gpt4TurboIdentifier,
-        ChatApi.gpt4Identifier,
-        ChatApi.gpt3_5TurboIdentifier,
     ]);
 
     static googleModels = new Set([
-        ChatApi.geminiExperimentalIdentifier,
+        ChatApi.gemini2_5ProExperimentalIdentifier,
         ChatApi.gemini2_0FlashIdentifier,
-        ChatApi.gemini1_5ProIdentifier,
-        ChatApi.gemini1_5FlashIdentifier,
-        ChatApi.gemini1_5Flash8bIdentifier,
+        ChatApi.gemini2_0FlashLiteIdentifier,
     ]);
 
     static groqModels = new Set([
-        //ChatApi.llama3_1_405bIdentifier, // Disabled
+        ChatApi.qwen_qwq32bIdentifier,
         ChatApi.llama3_3_70bIdentifier,
         ChatApi.llama3_1_8bIdentifier,
     ]);
@@ -213,13 +190,12 @@ class ChatApi {
         let sortedModels = [];
         if (modelSet.delete(ChatApi.gpt4OmniIdentifier)) sortedModels.push(ChatApi.gpt4OmniIdentifier);
         if (modelSet.delete(ChatApi.gpt4OmniMiniIdentifier)) sortedModels.push(ChatApi.gpt4OmniMiniIdentifier);
-        if (modelSet.delete(ChatApi.gemini1_5ProIdentifier)) sortedModels.push(ChatApi.gemini1_5ProIdentifier);
-        if (modelSet.delete(ChatApi.geminiExperimentalIdentifier)) sortedModels.push(ChatApi.geminiExperimentalIdentifier);
+        if (modelSet.delete(ChatApi.gemini2_5ProExperimentalIdentifier)) sortedModels.push(ChatApi.gemini2_5ProExperimentalIdentifier);
         if (modelSet.delete(ChatApi.gemini2_0FlashIdentifier)) sortedModels.push(ChatApi.gemini2_0FlashIdentifier);
-        if (modelSet.delete(ChatApi.gemini1_5FlashIdentifier)) sortedModels.push(ChatApi.gemini1_5FlashIdentifier);
-        if (modelSet.delete(ChatApi.gemini1_5Flash8bIdentifier)) sortedModels.push(ChatApi.gemini1_5Flash8bIdentifier);
+        if (modelSet.delete(ChatApi.gemini2_0FlashLiteIdentifier)) sortedModels.push(ChatApi.gemini2_0FlashLiteIdentifier);
         if (modelSet.delete(ChatApi.claude3_5SonnetIdentifier)) sortedModels.push(ChatApi.claude3_5SonnetIdentifier);
         if (modelSet.delete(ChatApi.claude3_5HaikuIdentifier)) sortedModels.push(ChatApi.claude3_5HaikuIdentifier);
+        if (modelSet.delete(ChatApi.qwen_qwq32bIdentifier)) sortedModels.push(ChatApi.qwen_qwq32bIdentifier);
         if (modelSet.delete(ChatApi.llama3_3_70bIdentifier)) sortedModels.push(ChatApi.llama3_3_70bIdentifier);
         if (modelSet.delete(ChatApi.llama3_1_8bIdentifier)) sortedModels.push(ChatApi.llama3_1_8bIdentifier);
         sortedModels = [...sortedModels, ...modelSet.values()];
