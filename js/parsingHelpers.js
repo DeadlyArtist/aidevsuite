@@ -102,7 +102,7 @@ class ParsingHelpers {
                 amount = 0;
             }
         }
-        console.log(codes);
+
         return codes;
     }
 
