@@ -51,6 +51,7 @@ function createProxy(proxyUrl, settings = null) {
     settings ??= {};
     settings.proxyAuthHeader ??= defaultProxyAuthorizationHeader;
     const { apiKey = null, request = {}, proxyAuthHeader, stream = null } = settings;
+    stream ??= request.stream;
 
     return async function (targetUrl, proxyRequestOptions = {}) {
         const proxyRequestBody = {
