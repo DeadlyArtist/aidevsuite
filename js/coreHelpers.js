@@ -15,16 +15,70 @@ _tryRemoveIndexHtml();
 
 pressedKeys = {};
 
-function onKeyDown(event) {
-    pressedKeys[event.key] = true;
+(function () {
+    function onKeyDown(event) {
+        pressedKeys[event.key] = true;
+    }
+
+    function onKeyUp(event) {
+        delete pressedKeys[event.key];
+    }
+
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
+})();
+window.addEventListener('focus', () => {
+    Object.keys(pressedKeys).forEach(key => delete pressedKeys[key]); // Delete all keys upon gaining focus to prevent missing a keyup from outside the window
+});
+
+function isKeyPressed(key) {
+    return !!pressedKeys[key];
 }
 
-function onKeyUp(event) {
-    delete pressedKeys[event.key];
-}
 
-document.addEventListener('keydown', onKeyDown);
-document.addEventListener('keyup', onKeyUp);
+let lastMousePosition = null;
+let isMouseInputReal = false;
+onBodyCreated(() => {
+    const dispatchFakeMousemove = () => {
+        if (lastMousePosition) {
+            const { x, y } = lastMousePosition;
+            let targetElement = document.elementFromPoint(x, y);
+            if (!targetElement) targetElement = document.body;
+
+            const fakeMouseEvent = new MouseEvent('mousemove-polled', {
+                clientX: x,
+                clientY: y,
+                bubbles: true,
+                cancelable: true,
+            });
+
+            targetElement.dispatchEvent(fakeMouseEvent);
+        }
+
+        requestAnimationFrame(dispatchFakeMousemove); // Post during each rerender
+    };
+
+    dispatchFakeMousemove();
+});
+document.addEventListener('mousemove', e => {
+    if (isMouseInputReal) lastMousePosition = { x: e.clientX, y: e.clientY };
+}, true);
+document.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === "mouse") {
+        isMouseInputReal = true;
+    } else {
+        isMouseInputReal = false;
+        lastMousePosition = null;
+    }
+}, true);
+document.addEventListener('pointermove', (e) => {
+    if (e.pointerType === "mouse") {
+        isMouseInputReal = true;
+    } else {
+        isMouseInputReal = false;
+        lastMousePosition = null;
+    }
+}, true);
 
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
