@@ -13,31 +13,42 @@ th, td {
     padding: 8px;
 }
 
+td {
+    vertical-align: top;
+}
+
 .tableFullBordered {
     border: 1px solid var(--border-color);
 }
 
 .tableBordered td, .tableBordered th {
-    border: none; /* Remove all borders first to avoid overlaps */
+    border: none;
+    /* Remove all borders first to avoid overlaps */
 }
 
 .tableBordered td {
-    border-bottom: 1px solid var(--border-color); /* Bottom border for all td */
-    border-left: 1px solid var(--border-color); /* Left border for all td */
+    border-bottom: 1px solid var(--border-color);
+    /* Bottom border for all td */
+    border-left: 1px solid var(--border-color);
+    /* Left border for all td */
 }
 
 .tableBordered th {
-    border-bottom: 1px solid var(--border-color); /* Bottom border for all th */
-    border-left: 1px solid var(--border-color); /* Left border for all th */
+    border-bottom: 1px solid var(--border-color);
+    /* Bottom border for all th */
+    border-left: 1px solid var(--border-color);
+    /* Left border for all th */
 }
 
 .tableBordered tr:last-child td, .tableBordered tfoot tr:last-child th {
-    border-bottom: 0; /* No top border for the first row's td */
+    border-bottom: 0;
+    /* No top border for the first row's td */
 }
 
 /* Special cases for the first column */
 .tableBordered tr td:first-child, .tableBordered tr th:first-child {
-    border-left: 0; /* No left border for the first column's td and th */
+    border-left: 0;
+    /* No left border for the first column's td and th */
 }
 
 /* handling the border-top for tfoot */

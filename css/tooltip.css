@@ -2,7 +2,7 @@
   display: none !important;
 }
 
-#tooltip {
+.tooltip {
   position: absolute;
   top: 2px;
   z-index: 9999;
@@ -13,17 +13,14 @@
   width: max-content;
   max-width: calc(100vw - 12px);
   background-color: var(--tooltip-background-color);
+  border: 1px solid var(--tooltip-border-color);
 }
-
-[color-scheme="light"] #tooltip {
-  border: 1px solid var(--border-color);
-}
-
 
 .cardTooltip {
   border-radius: 10px;
   padding: 32px;
-  width: 450px;
+  width: max-content;
+  max-width: min(calc(100vw - 12px), 700px);
 }
 
 @media (max-width: 450px) {
@@ -35,10 +32,11 @@
 .smallTooltip {
   border-radius: 5px;
   padding: 8px;
-  width: min(max-content, 400px);
+  width: max-content;
+  max-width: min(calc(100vw - 12px), 400px);
 }
 
-#tooltip[tooltip-position="top"]::after {
+.tooltip[tooltip-position="top"]::after {
   content: " ";
   position: absolute;
   top: 100%;
@@ -47,10 +45,10 @@
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: var(--tooltip-background-color) transparent transparent transparent;
+  border-color: var(--tooltip-border-color) transparent transparent transparent;
 }
 
-#tooltip[tooltip-position="bottom"]::after {
+.tooltip[tooltip-position="bottom"]::after {
   content: " ";
   position: absolute;
   bottom: 100%;
@@ -59,10 +57,10 @@
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent transparent var(--tooltip-background-color) transparent;
+  border-color: transparent transparent var(--tooltip-border-color) transparent;
 }
 
-#tooltip[tooltip-position="left"]::after {
+.tooltip[tooltip-position="left"]::after {
   content: " ";
   position: absolute;
   top: 50%;
@@ -71,10 +69,10 @@
   margin-top: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent transparent transparent var(--tooltip-background-color);
+  border-color: transparent transparent transparent var(--tooltip-border-color);
 }
 
-#tooltip[tooltip-position="right"]::after {
+.tooltip[tooltip-position="right"]::after {
   content: " ";
   position: absolute;
   top: 50%;
@@ -83,17 +81,18 @@
   margin-top: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent var(--tooltip-background-color) transparent transparent;
+  border-color: transparent var(--tooltip-border-color) transparent transparent;
 }
 
-.colorTooltips .replaceTooltips .tooltipTarget {
+/* markTooltips required because you only want to target text tooltips, and not e.g. button tooltips. */
+.colorTooltips .markTooltips .tooltipTarget {
   color: var(--stress-color);
 }
 
-.underlineTooltips .replaceTooltips .tooltipTarget {
+.underlineTooltips .markTooltips .tooltipTarget {
   text-decoration: underline 2px;
 }
 
-.highlightTooltips .replaceTooltips .tooltipTarget {
+.highlightTooltips .markTooltips .tooltipTarget {
   background-color: var(--highlight-color);
 }

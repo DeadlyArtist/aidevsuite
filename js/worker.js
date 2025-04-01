@@ -619,7 +619,7 @@ function createSimpleButton(elements, onClick, options = null) {
  * - **editableCaption** (bool) [optional]: Whether the caption can be edited. Default is false.
  * - **defaultCaptionValue** (string) [optional]: The default caption value for the input. Default is an empty string `''`.
  * - **captionPlaceholder** (string) [optional]: The placeholder text that appears when the caption input is empty. Default is `"Enter caption here..."`.
- * - **maxHeight** (number) [optional]: Must be between `0` and `8`. For no max height use `0`. Default is `6`.
+ * - **maxHeight** (number) [optional]: Must be between `0` and `8`. For no max height use `0`. Default is `1`.
  * - **captionMaxHeight** (number) [optional]: Must be between `0` and `8`. For no max height use `0`. Default is `6`.
  * - **imageMaxHeight** (number) [optional]: Must be between `0` and `8`. For no max height use `0`. Default is `0`.
  * - **allowImagePasting** (bool) [optional]: Whether the user can paste an image as dataURL. Default is `true`.

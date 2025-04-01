@@ -1068,7 +1068,7 @@ class Flow {
                 settings.placeholder = options.placeholder ?? 'Enter url here...';
                 settings.captionPlaceholder = options.captionPlaceholder ?? 'Enter caption here...';
                 settings.spellcheck = options.spellcheck ?? false;
-                settings.maxHeight = clamp(options.maxHeight ?? 6, 0, 8);
+                settings.maxHeight = clamp(options.maxHeight ?? 1, 0, 8);
                 settings.imageMaxHeight = clamp(options.imageMaxHeight ?? 0, 0, 8);
                 settings.captionMaxHeight = clamp(options.captionMaxHeight ?? 6, 0, 8);
                 settings.allowImagePasting = options.allowImagePasting ?? true;
@@ -1676,14 +1676,14 @@ class Flow {
 
             const figureElement = fromHTML(`<figure class="contenteditableContainerContent">`);
             const imgElement = fromHTML(`<img class="rounded-xl">`);
-            if (settings.imageMaxHeight > 0) imgElement.classList.add("maxHeight-" + settings.imageMaxHeight);
+            if (settings.imageMaxHeight > 0) figureElement.classList.add("maxHeight-" + settings.imageMaxHeight);
             imgElement.setAttribute('src', settings.url);
             imgElement.setAttribute('alt', settings.caption ?? "");
             figureElement.appendChild(imgElement);
             const captionCodeEditor = fromHTML(`<figcaption contenteditable-type="plainTextOnly" contenteditable="true" class="w-100 contenteditableContainerFooter fixText">`);
             settings.disabledElements.push(captionCodeEditor);
             if (!settings.editableCaption) captionCodeEditor.classList.add('hide');
-            if (settings.captionMaxHeight != 0) codeEditor.classList.add('maxHeight-' + settings.captionMaxHeight);
+            if (settings.captionMaxHeight != 0) captionCodeEditor.classList.add('maxHeight-' + settings.captionMaxHeight);
             figureElement.appendChild(captionCodeEditor);
 
             const streamTarget = fromHTML(`<figcaption class="w-100 contenteditableContainerFooter fixText hide">`);
