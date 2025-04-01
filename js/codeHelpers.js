@@ -16,7 +16,8 @@ class CodeHelpers {
         const codeLanguage = fromHTML(`<div class="codeLanguage">`);
         codeLanguage.textContent = language ? CodeHelpers.extractLanguage(languageClass) : 'any';
         codeBar.appendChild(codeLanguage);
-        const copyButton = fromHTML('<button tooltip="Copy Code" class="largeElement hoverable">');
+        let copyText = language == "Text" ? 'Copy Text' : 'Copy Code';
+        const copyButton = fromHTML(`<button tooltip="${copyText}" class="largeElement hoverable">`);
         let copyTime = Date.now();
         copyButton.addEventListener('click', e => {
             copyToClipboard(codeElement.innerText);
@@ -24,7 +25,7 @@ class CodeHelpers {
             copyTime = Date.now();
             const oldCopyTime = copyTime;
             window.setTimeout(function () {
-                if (oldCopyTime == copyTime) copyButton.setAttribute('tooltip', 'Copy Code'); // Only update if it hasn't been modified in the meantime.
+                if (oldCopyTime == copyTime) copyButton.setAttribute('tooltip', copyText); // Only update if it hasn't been modified in the meantime.
             }, seconds(3));
         });
         const copyIcon = icons.copy();
@@ -69,13 +70,14 @@ class CodeHelpers {
         const preContainer = fromHTML(`<div class="preContainer">`);
 
         let copyButton = null;
+        let copyText = options.language == "Text" ? 'Copy Text' : 'Copy Code';
         // Code bar
         if (!options.noBar) {
             const codeBar = fromHTML(`<div class="codeBar listContainerHorizontal">`);
             const codeLanguage = fromHTML(`<div class="codeLanguage">`);
             codeLanguage.textContent = options.language ?? 'any';
             codeBar.appendChild(codeLanguage);
-            copyButton = fromHTML('<button tooltip="Copy Code" class="largeElement hoverable">');
+            copyButton = fromHTML(`<button tooltip="${copyText}" class="largeElement hoverable">`);
             const copyIcon = icons.copy();
             copyButton.appendChild(copyIcon);
             codeBar.appendChild(copyButton);
@@ -90,7 +92,7 @@ class CodeHelpers {
                 copyTime = Date.now();
                 const oldCopyTime = copyTime;
                 window.setTimeout(function () {
-                    if (oldCopyTime == copyTime) copyButton.setAttribute('tooltip', 'Copy Code'); // Only update if it hasn't been modified in the meantime.
+                    if (oldCopyTime == copyTime) copyButton.setAttribute('tooltip', copyText); // Only update if it hasn't been modified in the meantime.
                 }, seconds(3));
             });
 
@@ -123,7 +125,7 @@ class CodeHelpers {
                 copyTime = Date.now();
                 const oldCopyTime = copyTime;
                 window.setTimeout(function () {
-                    if (oldCopyTime == copyTime) copyButton.setAttribute('tooltip', 'Copy Code'); // Only update if it hasn't been modified in the meantime.
+                    if (oldCopyTime == copyTime) copyButton.setAttribute('tooltip', copyText); // Only update if it hasn't been modified in the meantime.
                 }, seconds(3));
             });
 
