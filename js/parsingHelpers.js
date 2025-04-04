@@ -9,9 +9,9 @@ class ParsingHelpers {
                 amount++;
             } else {
                 if (amount === 3) {
-                    let start = i;
+                    let contentStart = i;
 
-                    let before = i - 4;
+                    let before = codeStart - 1;
                     let indentation = "";
                     let invalid = false;
                     while (before >= 0 && markdown[before] !== "\n") {
@@ -25,19 +25,23 @@ class ParsingHelpers {
                     if (invalid) {
                         amount = 0;
                         continue;
+                    } else {
+                        codeStart = before + 1;
                     }
 
                     let j = i;
                     let lineHappened = false;
                     let language = null;
+                    let contentEnd = j - 1;
                     while (j + 2 < markdown.length) {
+                        contentEnd = j - 1;
                         if (markdown[j] == "\`" && markdown[j + 1] == "\`" && markdown[j + 2] == "\`") {
                             if (!lineHappened) {
                                 j += 2;
                                 break;
                             }
 
-                            let beforeEnd = j - 1;
+                            let beforeEnd = contentEnd;
                             let endIndentation = "";
                             while (markdown[beforeEnd] !== "\n") {
                                 endIndentation = markdown[beforeEnd] + endIndentation;
@@ -49,33 +53,43 @@ class ParsingHelpers {
                                 continue;
                             }
 
+                            contentEnd = beforeEnd;
                             j += 2;
                             break;
                         }
                         if (markdown[j] == "\n" && !lineHappened) {
                             lineHappened = true;
-                            language = markdown.substring(start, j).trim();
+                            language = markdown.substring(contentStart, j).trim();
                             if (!language) language = null;
-                            start = j + 1;
+                            contentStart = j + 1;
                         }
                         j++;
                     }
                     i = j;
-                    let k = i - 1;
-                    while (k >= start && k >= i - 2 && markdown[k] == "\`") k--;
+                    if (markdown[contentEnd] == "\n") contentEnd--;
+
+                    let rawContent = markdown.substring(contentStart, contentEnd + 1);
+                    let lines = rawContent.split('\n');
+                    // Remove indentation from all lines if it matches the detected indentation
+                    if (indentation) {
+                        let indentRegex = new RegExp('^' + escapeRegex(indentation));
+                        lines = lines.map(line => line.replace(indentRegex, ''));
+                    }
+                    let cleanedContent = lines.join('\n');
 
                     codes.push({
                         block: true,
                         language,
+                        indentation,
                         start: codeStart,
                         end: i,
-                        contentStart: start,
-                        contentEnd: k,
-                        content: markdown.substring(start, k + 1),
+                        contentStart: contentStart,
+                        contentEnd: contentEnd,
+                        content: cleanedContent,
                         code: markdown.substring(codeStart, i + 1),
                     });
                 } else if (amount === 1) {
-                    let start = i;
+                    let contentStart = i;
                     let j = i;
                     let lineHappened = false;
                     while (j < markdown.length) {
@@ -88,14 +102,14 @@ class ParsingHelpers {
                     }
                     i = j;
                     if (lineHappened) continue;
-                    let k = i - 1;
+                    let contentEnd = i - 1;
                     if (!codeBlocksOnly) codes.push({
                         block: false,
                         start: codeStart,
                         end: i,
-                        contentStart: start,
-                        contentEnd: k,
-                        content: markdown.substring(start, k + 1),
+                        contentStart: contentStart,
+                        contentEnd: contentEnd,
+                        content: markdown.substring(contentStart, contentEnd + 1),
                         code: markdown.substring(codeStart, i + 1),
                     });
                 }

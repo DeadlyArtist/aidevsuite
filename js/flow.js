@@ -1610,7 +1610,10 @@ class Flow {
             // Markdown output
             const markdownElement = fromHTML(`<div class="w-100 markdownPreview scroll-y" placeholder="Markdown Output">`);
             markdownElement.setAttribute('placeholder', "The Markdown will be rendered here.");
-            if (settings.maxHeight > 0) markdownElement.classList.add("maxHeight-" + settings.maxHeight);
+            if (settings.maxHeight > 0) {
+                var maxHeight = settings.maxHeight * 100 + 40;
+                markdownElement.style.maxHeight = `${maxHeight}px`;
+            }
             renderMarkdown(markdownElement, settings.markdown, {
                 delimiters: settings.katexDelimiters,
                 noHighlight: settings.noHighlight,

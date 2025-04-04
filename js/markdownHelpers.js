@@ -45,7 +45,16 @@ class MarkdownHelpers {
     };
 
     static setup() {
-        // Use the extension with Marked
+        const renderer = new marked.Renderer();
+        const tokenizer = {
+            // Uncomment to remove indented code blocks
+            // code(src, tokens) {
+            //     // Return undefined
+            // }
+        };
+
+        marked.use({ tokenizer });
+        marked.use({ renderer });
         marked.use({ extensions: [MarkdownHelpers.highlightExtension] });
     }
 
@@ -142,12 +151,14 @@ function escapeMarkdown(text) {
 /**
  * the `options` parameter can have the following properties:
  *   - **katex** (bool) [optional]: Whether to render katex. Default is `true`.
- *   - **sanitize** (bool) [optional]: Whether to sanitize the markdown html. Defaults is `false`.
- *   - **noHighlight** (bool) [optional]: Whether custom `==highlighted text==` syntax is disallowed. Defaults is `false`.
+ *   - **sanitize** (bool) [optional]: Whether to sanitize the markdown html. Default is `false`.
+ *   - **noHighlight** (bool) [optional]: Whether custom `==highlighted text==` syntax is disallowed. Default is `false`.
+ *   - **codeblocksKeepIndent** (bool) [optional]: Whether code blocks should keep indent. Default is `true`.
  */
 function renderMarkdown(element, markdown, options = null) {
     options ??= {};
     options.katex ??= true;
+    options.codeblocksKeepIndent ??= true;
 
     // Escape math
     if (options.katex) markdown = KatexHelpers.escapeMathFromMarkdown(markdown);
@@ -156,10 +167,12 @@ function renderMarkdown(element, markdown, options = null) {
 
     // Temporarily replace code blocks
     let codeBlocks = ParsingHelpers.extractCodeInfo(markdown, true);
-    codeBlocks.sort((a, b) => b.start - a.start)
-    for (let [index, code] of Object.entries(codeBlocks)) {
-        code.placeholder = `__CODE_BLOCK_PLACEHOLDER_nvcr79vTLCNRoxvuisvusekvmsa92_${index}__`;
-        markdown = replaceSubstring(markdown, code.start, code.end, escapeMarkdown(code.placeholder));
+    if (options.codeblocksKeepIndent) {
+        codeBlocks.sort((a, b) => b.start - a.start)
+        for (let [index, code] of Object.entries(codeBlocks)) {
+            code.placeholder = `__CODE_BLOCK_PLACEHOLDER_nvcr79vTLCNRoxvuisvusekvmsa92_${index}__`;
+            markdown = replaceSubstring(markdown, code.start, code.end, escapeMarkdown(code.placeholder));
+        }
     }
 
     // Render markdown
@@ -178,7 +191,9 @@ function renderMarkdown(element, markdown, options = null) {
         element.innerHTML = '';
         return;
     }
-    for (let child of children) MarkdownHelpers._readdCodeblocks(child, codeBlocks);
+    if (options.codeblocksKeepIndent) {
+        for (let child of children) MarkdownHelpers._readdCodeblocks(child, codeBlocks);
+    }
 
     MarkdownHelpers.adjustMarkedOuput(...children);
     for (let child of children) {

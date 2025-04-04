@@ -2,22 +2,14 @@ code {
     white-space: pre-wrap;
     word-break: break-word;
     overflow-x: clip;
-}
-
-p code {
     background: var(--inline-code-background-color);
+    color: var(--inline-code-color);
 }
-
 
 .codeBar {
     background-color: var(--code-bar-background-color);
     color: var(--codeblock-color);
     border-radius: 8px 8px 0 0;
-}
-
-.codeBlock {
-    background-color: var(--codeblock-background-color);
-    color: var(--codeblock-color);
 }
 
 pre {
@@ -26,6 +18,8 @@ pre {
 }
 
 pre code {
+    background-color: var(--codeblock-background-color);
+    color: var(--codeblock-color);
     display: block;
     padding: 8px 16px;
 }
