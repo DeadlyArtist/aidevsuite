@@ -67,7 +67,7 @@ class Tooltip {
             }
         });
 
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: Tooltip.tooltipAttributes });
     }
 
     static setupTooltips(element = document.documentElement) {
