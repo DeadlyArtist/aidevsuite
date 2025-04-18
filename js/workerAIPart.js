@@ -44,6 +44,7 @@ class ChatHelpers {
     static gpt4OmniName = "GPT-4 Omni";
     static gpt4OmniMiniName = "GPT-4 Omni Mini";
     static gemini2_5ProExperimentalName = "Gemini 2.5 Pro Experimental";
+    static gemini2_5FlashPreviewName = "Gemini 2.5 Flash Preview";
     static gemini2_0FlashName = "Gemini 2.0 Flash";
     static gemini2_0FlashLiteName = "Gemini 2.0 Flash Lite";
     static qwen_qwq32bName = "QwQ 32b";
@@ -55,6 +56,7 @@ class ChatHelpers {
     static gpt4OmniIdentifier = "chatgpt-4o-latest";
     static gpt4OmniMiniIdentifier = "gpt-4o-mini";
     static gemini2_5ProExperimentalIdentifier = "gemini-2.5-pro-exp-03-25";
+    static gemini2_5FlashPreviewIdentifier = "gemini-2.5-flash-preview-04-17";
     static gemini2_0FlashIdentifier = "gemini-2.0-flash";
     static gemini2_0FlashLiteIdentifier = "gemini-2.0-flash-lite";
     static qwen_qwq32bIdentifier = "qwen-qwq-32b";
@@ -67,6 +69,7 @@ class ChatHelpers {
         [this.gpt4OmniIdentifier]: this.gpt4OmniName,
         [this.gpt4OmniMiniIdentifier]: this.gpt4OmniMiniName,
         [this.gemini2_5ProExperimentalIdentifier]: this.gemini2_5ProExperimentalName,
+        [this.gemini2_5FlashPreviewIdentifier]: this.gemini2_5FlashPreviewName,
         [this.gemini2_0FlashIdentifier]: this.gemini2_0FlashName,
         [this.gemini2_0FlashLiteIdentifier]: this.gemini2_0FlashLiteName,
         [this.qwen_qwq32bIdentifier]: this.qwen_qwq32bName,
@@ -82,6 +85,7 @@ class ChatHelpers {
         this.gpt4OmniIdentifier,
         this.gpt4OmniMiniIdentifier,
         this.gemini2_5ProExperimentalIdentifier,
+        this.gemini2_5FlashPreviewIdentifier,
         this.gemini2_0FlashIdentifier,
         this.gemini2_0FlashLiteIdentifier,
         this.claude3_5SonnetIdentifier,
