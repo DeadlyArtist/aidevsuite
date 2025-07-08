@@ -4,6 +4,7 @@ code {
     overflow-x: clip;
     background: var(--inline-code-background-color);
     color: var(--inline-code-color);
+    font-style: normal;
 }
 
 .codeBar {
