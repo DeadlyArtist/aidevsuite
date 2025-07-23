@@ -15,7 +15,15 @@ class MarkdownHelpers {
         '+': '\\+',
         '-': '\\-',
         '.': '\\.',
-        '!': '\\!'
+        '!': '\\!',
+        '~': '\\~',
+        '=': '\\=', // for highlighter extension
+        '>': '\\>',
+        '|': '\\|',
+        ':': '\\:',
+        '<': '\\<',  // especially to prevent HTML tag confusion
+        '&': '\\&',  // if using HTML rendering
+        '^': '\\^',  // in case of extensions like footnotes
     };
 
     static escapeMarkdownRegex = new RegExp(`${Object.keys(MarkdownHelpers.escapeMarkdownChars).map(k => escapeRegex(k)).join('|')}`, 'g');
@@ -114,6 +122,20 @@ class MarkdownHelpers {
         return codeBar;
     }
 
+    static _replaceCodeblocks(markdown, codeBlocks) {
+        codeBlocks.sort((a, b) => b.start - a.start)
+        for (let [index, code] of Object.entries(codeBlocks)) {
+            code.placeholder = `__CODE_BLOCK_PLACEHOLDER_nvcr79vTLCNRoxvuisvusekvmsa92_${index}__`;
+            code.markEscaped_placeholder = escapeMarkdown(code.placeholder);
+            code.htmlEscaped_placeholder = escapeHTML(code.placeholder);
+            code.htmlMarkEscaped_placeholder = escapeHTML(code.markEscaped_placeholder);
+            code.htmlEscaped_language = code.language ? escapeHTML(code.language) : code.language;
+            code.htmlEscaped_content = escapeHTML(code.content);
+            markdown = replaceSubstring(markdown, code.start, code.end, code.markEscaped_placeholder);
+        }
+        return markdown;
+    }
+
     static _readdCodeblocks(element, codeBlocks) {
         let walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
         let textNodes = [];
@@ -127,12 +149,15 @@ class MarkdownHelpers {
             let modified = false;
 
             codeBlocks.forEach(code => {
-                updatedText = updatedText.replace(escapeHTML(code.placeholder), function () {
-                    modified = true;
-                    let classPart = '';
-                    if (code.language) classPart = ` class="language-${escapeHTML(code.language)}"`;
-                    return `<pre><code${classPart}>${escapeHTML(code.content)}</code></pre>`;
-                });
+                // Check for both escaped and not to mitigate errors
+                for (let text of [code.htmlEscaped_placeholder, code.htmlMarkEscaped_placeholder]) {
+                    updatedText = updatedText.replace(text, function () {
+                        modified = true;
+                        let classPart = '';
+                        if (code.language) classPart = ` class="language-${code.htmlEscaped_language}"`;
+                        return `<pre><code${classPart}>${code.htmlEscaped_content}</code></pre>`;
+                    });
+                }
             });
 
             if (modified) {
@@ -168,11 +193,7 @@ function renderMarkdown(element, markdown, options = null) {
     // Temporarily replace code blocks
     let codeBlocks = ParsingHelpers.extractCodeInfo(markdown, true);
     if (options.codeblocksKeepIndent) {
-        codeBlocks.sort((a, b) => b.start - a.start)
-        for (let [index, code] of Object.entries(codeBlocks)) {
-            code.placeholder = `__CODE_BLOCK_PLACEHOLDER_nvcr79vTLCNRoxvuisvusekvmsa92_${index}__`;
-            markdown = replaceSubstring(markdown, code.start, code.end, escapeMarkdown(code.placeholder));
-        }
+        markdown = MarkdownHelpers._replaceCodeblocks(markdown, codeBlocks);
     }
 
     // Render markdown

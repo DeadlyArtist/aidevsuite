@@ -8,7 +8,7 @@ class ParsingHelpers {
                 if (amount == 0) codeStart = i;
                 amount++;
             } else {
-                if (amount === 3) {
+                if (amount >= 3) {
                     let contentStart = i;
 
                     let before = codeStart - 1;
@@ -33,11 +33,22 @@ class ParsingHelpers {
                     let lineHappened = false;
                     let language = null;
                     let contentEnd = j - 1;
-                    while (j + 2 < markdown.length) {
+                    let starters = 0;
+                    let toNext = (amount - 1);
+                    while (j + toNext < markdown.length) {
                         contentEnd = j - 1;
-                        if (markdown[j] == "\`" && markdown[j + 1] == "\`" && markdown[j + 2] == "\`") {
+                        let maybeClosing = true;
+                        for (let t = j; t < j + amount; t++) {
+                            if (markdown[t] != "\`") {
+                                maybeClosing = false;
+                                break;
+                            }
+                        }
+                        if (j + amount < markdown.length && markdown[j + amount] == "\`") maybeClosing = false;
+
+                        if (maybeClosing) {
                             if (!lineHappened) {
-                                j += 2;
+                                j += toNext;
                                 break;
                             }
 
@@ -49,12 +60,22 @@ class ParsingHelpers {
                             }
 
                             if (endIndentation !== indentation) {
-                                j += 2;
+                                j += toNext;
+                                continue;
+                            }
+
+                            if (j + amount < markdown.length && !/^\s$/.test(markdown[j + amount])) {
+                                starters++;
+                                j += toNext;
+                                continue;
+                            } else if (starters > 0) {
+                                starters--;
+                                j += toNext;
                                 continue;
                             }
 
                             contentEnd = beforeEnd;
-                            j += 2;
+                            j += toNext;
                             break;
                         }
                         if (markdown[j] == "\n" && !lineHappened) {
