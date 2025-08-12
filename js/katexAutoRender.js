@@ -52,41 +52,11 @@ const renderMathInElement = function (elem, options) {
         throw new Error("No element provided to render");
     }
 
-    const optionsCopy = {};
-
-    // Object.assign(optionsCopy, option)
-    for (const option in options) {
-        if (options.hasOwnProperty(option)) {
-            optionsCopy[option] = options[option];
-        }
-    }
-
-    // default options
-    optionsCopy.delimiters = optionsCopy.delimiters || [
-        { left: "$$", right: "$$", display: true },
-        { left: "\\(", right: "\\)", display: false },
-        // (FIXED) LaTeX uses $…$, but it ruins the display of normal `$` in text:
-        { left: "$", right: "$", display: false },
-        // $ must come after $$
-
-        // Render AMS environments even if outside $$…$$ delimiters.
-        { left: "\\begin{equation}", right: "\\end{equation}", display: true },
-        { left: "\\begin{align}", right: "\\end{align}", display: true },
-        { left: "\\begin{alignat}", right: "\\end{alignat}", display: true },
-        { left: "\\begin{gather}", right: "\\end{gather}", display: true },
-        { left: "\\begin{CD}", right: "\\end{CD}", display: true },
-
-        { left: "\\[", right: "\\]", display: true },
-    ];
+    const optionsCopy = KatexHelpers.getOptionsCopy(options);
     optionsCopy.ignoredTags = optionsCopy.ignoredTags || [
         "script", "noscript", "style", "textarea", "pre", "code", "option",
     ];
     optionsCopy.ignoredClasses = optionsCopy.ignoredClasses || [];
-    optionsCopy.errorCallback = optionsCopy.errorCallback || console.error;
-
-    // Enable sharing of global macros defined via `\gdef` between different
-    // math elements within a single call to `renderMathInElement`.
-    optionsCopy.macros = optionsCopy.macros || {};
 
     KatexAutoRender.renderElem(elem, optionsCopy);
 };
@@ -202,7 +172,7 @@ class KatexAutoRender {
             // https://github.com/KaTeX/KaTeX/pull/3926/commits/6bb264663577e618c4ce6b1405cec62722c8d8d0
             let previousData = data.slice(-1).pop(),
                 // ($ fix) Treat current data as plain text if previous data ends with any non white space character or any numbers with optional space after them
-                currentData = rawData.trim().length == 0 || (previousData && /(\S|\b[+-]?\d+([,.]\d+)*\s*)$/.test(previousData.data) && rawData[0] === '$') ? {
+                currentData = rawData.trim().length == 0 || (delimiters.dollar && previousData && /(\S|\b[+-]?\d+([,.]\d+)*\s*)$/.test(previousData.data) && rawData[0] === '$') ? {
                     type: "text",
                     data: rawData,
                 } : {
@@ -213,7 +183,7 @@ class KatexAutoRender {
                 };
             text = text.slice(index + delimiters[i].right.length);
             // ($ fix) Treat current data as plain text if next data starts with any non white space character or any numbers with optional space after them
-            if (currentData.type === "math" && /^(\S|\s*[+-]?\d+([,.]\d+)*\b)/.test(text) && currentData.rawData[0] === '$') {
+            if (delimiters.dollar && currentData.type === "math" && /^(\S|\s*[+-]?\d+([,.]\d+)*\b)/.test(text) && currentData.rawData[0] === '$') {
                 currentData.type = "text";
                 currentData.data = currentData.rawData;
                 delete currentData.display;

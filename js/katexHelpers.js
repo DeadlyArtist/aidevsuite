@@ -74,9 +74,6 @@ class KatexHelpers {
         optionsCopy.delimiters = optionsCopy.delimiters || [
             { left: "$$", right: "$$", display: true },
             { left: "\\(", right: "\\)", display: false },
-            // (FIXED) LaTeX uses $…$, but it ruins the display of normal `$` in text:
-            { left: "$", right: "$", display: false },
-            // $ must come after $$
 
             // Render AMS environments even if outside $$…$$ delimiters.
             { left: "\\begin{equation}", right: "\\end{equation}", display: true },
@@ -87,6 +84,7 @@ class KatexHelpers {
 
             { left: "\\[", right: "\\]", display: true },
         ];
+        optionsCopy.delimiters.dollar ??= true; // has special parsing
         optionsCopy.errorCallback = optionsCopy.errorCallback || console.error;
 
         // Enable sharing of global macros defined via `\gdef` between different
