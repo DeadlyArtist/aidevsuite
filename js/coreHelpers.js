@@ -264,6 +264,11 @@ function replaceTextNodeWithHTML(node, html) {
     }
 }
 
+// Requires DOMPurify library
+function sanitizeHtml(html) {
+    return DOMPurify.sanitize(html);
+}
+
 function clamp(number, min, max) {
     return Math.max(min, Math.min(number, max));
 }

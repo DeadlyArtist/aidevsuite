@@ -363,12 +363,12 @@ class Flow {
         doScrollTick();
 
         const result = await ChatApi.streamChat(context, t => {
-            const code = ParsingHelpers.extractCode(t);
+            const code = MarkdownHelpers.extractCode(t);
             Flow.streamTargetElement.textContent = code;
             highlightCode(Flow.streamTargetElement);
             doScrollTick();
         });
-        const code = ParsingHelpers.extractCode(result);
+        const code = MarkdownHelpers.extractCode(result);
 
         Flow.codeEditor.pushUndoStop();
         Flow.codeEditor.executeEdits('name-of-edit', [

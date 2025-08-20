@@ -139,7 +139,7 @@ class KatexHelpers {
 
     static splitAtDelimiters(text, delimiters) {
         // Temporarily replace code blocks
-        let codes = ParsingHelpers.extractCodeInfo(text);
+        let codes = MarkdownHelpers.extractCodeInfo(text);
         codes.sort((a, b) => b.start - a.start)
         for (let [index, code] of Object.entries(codes)) {
             code.placeholder = `__CODE_BLOCK_PLACEHOLDER_9x91n2w87x87z127t7wtnx761t2_${index}__`;
