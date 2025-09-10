@@ -41,6 +41,9 @@ class ChatHelpers {
         return message.role + ": " + message.content;
     }
 
+    static gpt5ChatName = "GPT-5 Chat";
+    static gpt5Name = "GPT-5";
+    static gpt5MiniName = "GPT-5 Mini";
     static gpt4OmniName = "GPT-4 Omni";
     static gpt4OmniMiniName = "GPT-4 Omni Mini";
     static gemini2_5ProExperimentalName = "Gemini 2.5 Pro Experimental";
@@ -53,6 +56,9 @@ class ChatHelpers {
     static claude3_5SonnetName = "Claude 3.5 Sonnet";
     static claude3_5HaikuName = "Claude 3.5 Haiku";
 
+    static gpt5ChatIdentifier = "gpt-5-chat-latest";
+    static gpt5Identifier = "gpt-5";
+    static gpt5MiniIdentifier = "gpt-5-mini";
     static gpt4OmniIdentifier = "chatgpt-4o-latest";
     static gpt4OmniMiniIdentifier = "gpt-4o-mini";
     static gemini2_5ProExperimentalIdentifier = "gemini-2.5-pro-exp-03-25";
@@ -66,6 +72,9 @@ class ChatHelpers {
     static claude3_5HaikuIdentifier = "claude-3-5-haiku-latest";
 
     static chatModelNames = {
+        [this.gpt5ChatIdentifier]: this.gpt5ChatName,
+        [this.gpt5Identifier]: this.gpt5Name,
+        [this.gpt5MiniIdentifier]: this.gpt5MiniName,
         [this.gpt4OmniIdentifier]: this.gpt4OmniName,
         [this.gpt4OmniMiniIdentifier]: this.gpt4OmniMiniName,
         [this.gemini2_5ProExperimentalIdentifier]: this.gemini2_5ProExperimentalName,
@@ -82,6 +91,9 @@ class ChatHelpers {
     static chatModels = new Set(Object.keys(this.chatModelNames));
 
     static chatModelsThatAllowImages = new Set([
+        this.gpt5ChatIdentifier,
+        this.gpt5Identifier,
+        this.gpt5MiniIdentifier,
         this.gpt4OmniIdentifier,
         this.gpt4OmniMiniIdentifier,
         this.gemini2_5ProExperimentalIdentifier,

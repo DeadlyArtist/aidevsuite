@@ -43,6 +43,9 @@ class ChatApi {
     static groqEndpoint = "https://api.groq.com/openai/v1/chat/completions";
     static anthropicEndpoint = "https://api.anthropic.com/v1/messages";
 
+    static gpt5ChatName = "GPT-5 Chat";
+    static gpt5Name = "GPT-5";
+    static gpt5MiniName = "GPT-5 Mini";
     static gpt4OmniName = "GPT-4 Omni";
     static gpt4OmniMiniName = "GPT-4 Omni Mini";
     static gemini2_5ProExperimentalName = "Gemini 2.5 Pro Experimental";
@@ -55,6 +58,9 @@ class ChatApi {
     static claude3_5SonnetName = "Claude 3.5 Sonnet";
     static claude3_5HaikuName = "Claude 3.5 Haiku";
 
+    static gpt5ChatIdentifier = "gpt-5-chat-latest";
+    static gpt5Identifier = "gpt-5";
+    static gpt5MiniIdentifier = "gpt-5-mini";
     static gpt4OmniIdentifier = "chatgpt-4o-latest";
     static gpt4OmniMiniIdentifier = "gpt-4o-mini";
     static gemini2_5ProExperimentalIdentifier = "gemini-2.5-pro-exp-03-25";
@@ -73,6 +79,9 @@ class ChatApi {
     static defaultAnthropicModel = ChatApi.claude3_5SonnetIdentifier;
 
     static chatModelNames = {
+        [ChatApi.gpt5ChatIdentifier]: ChatApi.gpt5ChatName,
+        [ChatApi.gpt5Identifier]: ChatApi.gpt5Name,
+        [ChatApi.gpt5MiniIdentifier]: ChatApi.gpt5MiniName,
         [ChatApi.gpt4OmniIdentifier]: ChatApi.gpt4OmniName,
         [ChatApi.gpt4OmniMiniIdentifier]: ChatApi.gpt4OmniMiniName,
         [ChatApi.gemini2_5ProExperimentalIdentifier]: ChatApi.gemini2_5ProExperimentalName,
@@ -89,6 +98,9 @@ class ChatApi {
     static chatModels = new Set(Object.keys(ChatApi.chatModelNames));
 
     static chatModelsThatAllowImages = new Set([
+        ChatApi.gpt5ChatIdentifier,
+        ChatApi.gpt5Identifier,
+        ChatApi.gpt5MiniIdentifier,
         ChatApi.gpt4OmniIdentifier,
         ChatApi.gpt4OmniMiniIdentifier,
         ChatApi.claude3_5SonnetIdentifier,
@@ -101,8 +113,16 @@ class ChatApi {
     ]);
 
     static gptModels = new Set([
+        ChatApi.gpt5ChatIdentifier,
+        ChatApi.gpt5Identifier,
+        ChatApi.gpt5MiniIdentifier,
         ChatApi.gpt4OmniIdentifier,
         ChatApi.gpt4OmniMiniIdentifier,
+    ]);
+
+    static completionModels = new Set([
+        ChatApi.gpt5Identifier,
+        ChatApi.gpt5MiniIdentifier
     ]);
 
     static googleModels = new Set([
@@ -175,6 +195,9 @@ class ChatApi {
     static getMaxTokens(model) {
         if (ChatApi.groqModels.has(model)) return 8000;
         else if (model == ChatApi.gpt4OmniIdentifier) return 16384;
+        else if (model == ChatApi.gpt5ChatIdentifier) return 16384;
+        else if (model == ChatApi.gpt5Identifier) return 128000;
+        else if (model == ChatApi.gpt5MiniIdentifier) return 128000;
         else if (ChatApi.googleModels.has(model)) return 8192;
         else return 4096;
     }
@@ -193,6 +216,9 @@ class ChatApi {
         models ??= [...ChatApi.chatModels.values()];
         const modelSet = new Set(models);
         let sortedModels = [];
+        if (modelSet.delete(ChatApi.gpt5ChatIdentifier)) sortedModels.push(ChatApi.gpt5ChatIdentifier);
+        if (modelSet.delete(ChatApi.gpt5Identifier)) sortedModels.push(ChatApi.gpt5Identifier);
+        if (modelSet.delete(ChatApi.gpt5MiniIdentifier)) sortedModels.push(ChatApi.gpt5MiniIdentifier);
         if (modelSet.delete(ChatApi.gpt4OmniIdentifier)) sortedModels.push(ChatApi.gpt4OmniIdentifier);
         if (modelSet.delete(ChatApi.gpt4OmniMiniIdentifier)) sortedModels.push(ChatApi.gpt4OmniMiniIdentifier);
         if (modelSet.delete(ChatApi.gemini2_5ProExperimentalIdentifier)) sortedModels.push(ChatApi.gemini2_5ProExperimentalIdentifier);
@@ -243,6 +269,10 @@ class ChatApi {
             max_tokens: options.maxTokens ?? ChatApi.getMaxTokens(model),
             messages: messagesCopy,
         };
+        if (ChatApi.completionModels.has(model)) {
+            body.max_completion_tokens = body.max_tokens;
+            delete body.max_tokens;
+        }
         if (options.seed != null) body.seed = options.seed;
         if (options.jsonMode == true) body.response_format = { "type": "json_object" };
 
@@ -348,6 +378,10 @@ class ChatApi {
             messages: messagesCopy,
             stream: true
         };
+        if (ChatApi.completionModels.has(model)) {
+            body.max_completion_tokens = body.max_tokens;
+            delete body.max_tokens;
+        }
         if (options.seed != null) body.seed = options.seed;
         if (options.jsonMode == true) body.response_format = { "type": "json_object" };
 
