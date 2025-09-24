@@ -5,6 +5,8 @@ code {
     background: var(--inline-code-background-color);
     color: var(--inline-code-color);
     font-style: normal;
+    font-size: 16px;
+    font-weight: normal;
 }
 
 .codeBar {
