@@ -351,6 +351,7 @@ function renderMarkdown(element, markdown, options = null) {
     if (options.codeblocksKeepIndent) {
         markdown = MarkdownHelpers._replaceCodeblocks(markdown, codeBlocks);
     }
+    markdown = markdown.replace("‑", "-").replace(" ", " "); // Fix ChatGPT madness
 
     // Render markdown
     let html = marked.parse(markdown);

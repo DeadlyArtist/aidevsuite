@@ -32,6 +32,7 @@ const _htmlStringHelpers = {
         '"': 'quot',
         '&': 'amp',
         '\'': '#39',
+        ' ': 'nbsp',
     },
     getEscapeHtmlRegex() {
         let escapeHtmlRegexString = '[';
