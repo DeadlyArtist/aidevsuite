@@ -55,7 +55,8 @@ const _htmlStringHelpers = {
         gt: '>',
         quot: '"',
         amp: '&',
-        apos: '\''
+        apos: '\'',
+        nbsp: ' ',
     },
 };
 _htmlStringHelpers.escapeHtmlRegex = _htmlStringHelpers.getEscapeHtmlRegex();
