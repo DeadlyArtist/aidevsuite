@@ -195,7 +195,7 @@ For your security, please do not enter sensitive data into scripts that rely on 
 
 ## License
 
-I have not yet settled on a license.
+This project is licensed under MIT license.
 
 ## Author
 
