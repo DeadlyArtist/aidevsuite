@@ -86,6 +86,7 @@ class KatexHelpers {
         ];
         optionsCopy.delimiters.dollar ??= true; // has special parsing
         optionsCopy.errorCallback = optionsCopy.errorCallback || console.error;
+        optionsCopy.throwOnError = false;
 
         // Enable sharing of global macros defined via `\gdef` between different
         // math elements within a single call to `renderMathInElement`.
