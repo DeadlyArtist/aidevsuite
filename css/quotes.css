@@ -1,16 +1,15 @@
 blockquote {
     padding: 0 60px;
-    padding:10px;
-    padding-left:55px;
+    padding: 10px;
+    padding-left: 55px;
     font-style: italic;
 }
- 
+
 blockquote:before {
     display: block;
     font-size: 700%;
     content: '“';
-    height: 1px;
     margin-left: -0.55em;
-    position:relative;
-    top:-40px;
+    margin-top: -0.34em;
+    position: absolute;
 }
