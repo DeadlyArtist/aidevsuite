@@ -43,11 +43,11 @@ class ChatApi {
     static groqEndpoint = "https://api.groq.com/openai/v1/chat/completions";
     static anthropicEndpoint = "https://api.anthropic.com/v1/messages";
 
+    static gptChatName = "ChatGPT";
+    static gpt5_5Name = "GPT-5.5";
     static gpt5ChatName = "GPT-5 Chat";
     static gpt5Name = "GPT-5";
     static gpt5MiniName = "GPT-5 Mini";
-    static gpt4OmniName = "GPT-4 Omni";
-    static gpt4OmniMiniName = "GPT-4 Omni Mini";
     static gemini2_5ProExperimentalName = "Gemini 2.5 Pro Experimental";
     static gemini2_5FlashPreviewName = "Gemini 2.5 Flash Preview";
     static gemini2_0FlashName = "Gemini 2.0 Flash";
@@ -58,11 +58,11 @@ class ChatApi {
     static claude3_5SonnetName = "Claude 3.5 Sonnet";
     static claude3_5HaikuName = "Claude 3.5 Haiku";
 
+    static gptChatIdentifier = "chat-latest";
+    static gpt5_5Identifier = "gpt-5.5";
     static gpt5ChatIdentifier = "gpt-5-chat-latest";
     static gpt5Identifier = "gpt-5";
     static gpt5MiniIdentifier = "gpt-5-mini";
-    static gpt4OmniIdentifier = "chatgpt-4o-latest";
-    static gpt4OmniMiniIdentifier = "gpt-4o-mini";
     static gemini2_5ProExperimentalIdentifier = "gemini-2.5-pro-exp-03-25";
     static gemini2_5FlashPreviewIdentifier = "gemini-2.5-flash-preview-04-17";
     static gemini2_0FlashIdentifier = "gemini-2.0-flash";
@@ -73,17 +73,17 @@ class ChatApi {
     static claude3_5SonnetIdentifier = "claude-3-5-sonnet-latest";
     static claude3_5HaikuIdentifier = "claude-3-5-haiku-latest";
 
-    static defaultGptModel = ChatApi.gpt4OmniIdentifier;
+    static defaultGptModel = ChatApi.gpt5_5Identifier;
     static defaultGoogleModel = ChatApi.gemini2_5ProExperimentalIdentifier;
     static defaultGroqModel = ChatApi.qwen_qwq32bIdentifier;
     static defaultAnthropicModel = ChatApi.claude3_5SonnetIdentifier;
 
     static chatModelNames = {
+        [ChatApi.gptChatIdentifier]: ChatApi.gpt5ChatName,
+        [ChatApi.gpt5_5Identifier]: ChatApi.gpt5_5Name,
         [ChatApi.gpt5ChatIdentifier]: ChatApi.gpt5ChatName,
         [ChatApi.gpt5Identifier]: ChatApi.gpt5Name,
         [ChatApi.gpt5MiniIdentifier]: ChatApi.gpt5MiniName,
-        [ChatApi.gpt4OmniIdentifier]: ChatApi.gpt4OmniName,
-        [ChatApi.gpt4OmniMiniIdentifier]: ChatApi.gpt4OmniMiniName,
         [ChatApi.gemini2_5ProExperimentalIdentifier]: ChatApi.gemini2_5ProExperimentalName,
         [ChatApi.gemini2_5FlashPreviewIdentifier]: ChatApi.gemini2_5FlashPreviewName,
         [ChatApi.gemini2_0FlashIdentifier]: ChatApi.gemini2_0FlashName,
@@ -98,11 +98,11 @@ class ChatApi {
     static chatModels = new Set(Object.keys(ChatApi.chatModelNames));
 
     static chatModelsThatAllowImages = new Set([
+        ChatApi.gptChatIdentifier,
+        ChatApi.gpt5_5Identifier,
         ChatApi.gpt5ChatIdentifier,
         ChatApi.gpt5Identifier,
         ChatApi.gpt5MiniIdentifier,
-        ChatApi.gpt4OmniIdentifier,
-        ChatApi.gpt4OmniMiniIdentifier,
         ChatApi.claude3_5SonnetIdentifier,
         ChatApi.gemini2_5ProExperimentalIdentifier,
         ChatApi.gemini2_5FlashPreviewIdentifier,
@@ -113,14 +113,16 @@ class ChatApi {
     ]);
 
     static gptModels = new Set([
+        ChatApi.gptChatIdentifier,
+        ChatApi.gpt5_5Identifier,
         ChatApi.gpt5ChatIdentifier,
         ChatApi.gpt5Identifier,
         ChatApi.gpt5MiniIdentifier,
-        ChatApi.gpt4OmniIdentifier,
-        ChatApi.gpt4OmniMiniIdentifier,
     ]);
 
     static completionModels = new Set([
+        ChatApi.gptChatIdentifier,
+        ChatApi.gpt5_5Identifier,
         ChatApi.gpt5Identifier,
         ChatApi.gpt5MiniIdentifier
     ]);
@@ -194,10 +196,11 @@ class ChatApi {
 
     static getMaxTokens(model) {
         if (ChatApi.groqModels.has(model)) return 8000;
-        else if (model == ChatApi.gpt4OmniIdentifier) return 16384;
         else if (model == ChatApi.gpt5ChatIdentifier) return 16384;
         else if (model == ChatApi.gpt5Identifier) return 128000;
         else if (model == ChatApi.gpt5MiniIdentifier) return 128000;
+        else if (model == ChatApi.gptChatIdentifier) return 128000;
+        else if (model == ChatApi.gpt5_5Identifier) return 128000;
         else if (ChatApi.googleModels.has(model)) return 8192;
         else return 4096;
     }
@@ -216,11 +219,11 @@ class ChatApi {
         models ??= [...ChatApi.chatModels.values()];
         const modelSet = new Set(models);
         let sortedModels = [];
+        if (modelSet.delete(ChatApi.gpt5_5Identifier)) sortedModels.push(ChatApi.gpt5_5Identifier);
         if (modelSet.delete(ChatApi.gpt5ChatIdentifier)) sortedModels.push(ChatApi.gpt5ChatIdentifier);
         if (modelSet.delete(ChatApi.gpt5Identifier)) sortedModels.push(ChatApi.gpt5Identifier);
         if (modelSet.delete(ChatApi.gpt5MiniIdentifier)) sortedModels.push(ChatApi.gpt5MiniIdentifier);
-        if (modelSet.delete(ChatApi.gpt4OmniIdentifier)) sortedModels.push(ChatApi.gpt4OmniIdentifier);
-        if (modelSet.delete(ChatApi.gpt4OmniMiniIdentifier)) sortedModels.push(ChatApi.gpt4OmniMiniIdentifier);
+        if (modelSet.delete(ChatApi.gptChatIdentifier)) sortedModels.push(ChatApi.gptChatIdentifier);
         if (modelSet.delete(ChatApi.gemini2_5ProExperimentalIdentifier)) sortedModels.push(ChatApi.gemini2_5ProExperimentalIdentifier);
         if (modelSet.delete(ChatApi.gemini2_5FlashPreviewIdentifier)) sortedModels.push(ChatApi.gemini2_5FlashPreviewIdentifier);
         if (modelSet.delete(ChatApi.gemini2_0FlashIdentifier)) sortedModels.push(ChatApi.gemini2_0FlashIdentifier);

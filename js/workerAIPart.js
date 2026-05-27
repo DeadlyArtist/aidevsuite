@@ -41,11 +41,11 @@ class ChatHelpers {
         return message.role + ": " + message.content;
     }
 
+    static gptChatName = "ChatGPT";
+    static gpt5_5Name = "GPT-5.5";
     static gpt5ChatName = "GPT-5 Chat";
     static gpt5Name = "GPT-5";
     static gpt5MiniName = "GPT-5 Mini";
-    static gpt4OmniName = "GPT-4 Omni";
-    static gpt4OmniMiniName = "GPT-4 Omni Mini";
     static gemini2_5ProExperimentalName = "Gemini 2.5 Pro Experimental";
     static gemini2_5FlashPreviewName = "Gemini 2.5 Flash Preview";
     static gemini2_0FlashName = "Gemini 2.0 Flash";
@@ -56,11 +56,11 @@ class ChatHelpers {
     static claude3_5SonnetName = "Claude 3.5 Sonnet";
     static claude3_5HaikuName = "Claude 3.5 Haiku";
 
+    static gptChatIdentifier = "chat-latest";
+    static gpt5_5Identifier = "gpt-5.5";
     static gpt5ChatIdentifier = "gpt-5-chat-latest";
     static gpt5Identifier = "gpt-5";
     static gpt5MiniIdentifier = "gpt-5-mini";
-    static gpt4OmniIdentifier = "chatgpt-4o-latest";
-    static gpt4OmniMiniIdentifier = "gpt-4o-mini";
     static gemini2_5ProExperimentalIdentifier = "gemini-2.5-pro-exp-03-25";
     static gemini2_5FlashPreviewIdentifier = "gemini-2.5-flash-preview-04-17";
     static gemini2_0FlashIdentifier = "gemini-2.0-flash";
@@ -72,11 +72,11 @@ class ChatHelpers {
     static claude3_5HaikuIdentifier = "claude-3-5-haiku-latest";
 
     static chatModelNames = {
+        [this.gptChatIdentifier]: this.gptChatName,
+        [this.gpt5_5Identifier]: this.gpt5_5Name,
         [this.gpt5ChatIdentifier]: this.gpt5ChatName,
         [this.gpt5Identifier]: this.gpt5Name,
         [this.gpt5MiniIdentifier]: this.gpt5MiniName,
-        [this.gpt4OmniIdentifier]: this.gpt4OmniName,
-        [this.gpt4OmniMiniIdentifier]: this.gpt4OmniMiniName,
         [this.gemini2_5ProExperimentalIdentifier]: this.gemini2_5ProExperimentalName,
         [this.gemini2_5FlashPreviewIdentifier]: this.gemini2_5FlashPreviewName,
         [this.gemini2_0FlashIdentifier]: this.gemini2_0FlashName,
@@ -91,11 +91,11 @@ class ChatHelpers {
     static chatModels = new Set(Object.keys(this.chatModelNames));
 
     static chatModelsThatAllowImages = new Set([
+        this.gptChatIdentifier,
+        this.gpt5_5Identifier,
         this.gpt5ChatIdentifier,
         this.gpt5Identifier,
         this.gpt5MiniIdentifier,
-        this.gpt4OmniIdentifier,
-        this.gpt4OmniMiniIdentifier,
         this.gemini2_5ProExperimentalIdentifier,
         this.gemini2_5FlashPreviewIdentifier,
         this.gemini2_0FlashIdentifier,
