@@ -30,11 +30,7 @@ async function fetchTextWithCache(url) {
     if (FetchHelpers.fetchTextCache[url]) return await FetchHelpers.fetchTextCache[url];
     if (FetchHelpers.fetchTextPromises[url]) return await FetchHelpers.fetchTextPromises[url];
 
-    const promise = (async () => {
-        const response = await fetch(url);
-        const text = await response.text();
-        return text;
-    })();
+    const promise = fetchText();
     FetchHelpers.fetchTextPromises[url] = promise;
     const result = await promise;
     FetchHelpers.fetchTextCache[url] = result;

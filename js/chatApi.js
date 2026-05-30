@@ -112,6 +112,10 @@ class ChatApi {
         ChatApi.claude3_5HaikuIdentifier,
     ]);
 
+    static reasoningModels = new Set([
+        ChatApi.gpt5_5Identifier,
+    ]);
+
     static gptModels = new Set([
         ChatApi.gptChatIdentifier,
         ChatApi.gpt5_5Identifier,
@@ -148,6 +152,13 @@ class ChatApi {
     static modelsThatCantCombineJsonAndStreaming = new Set([
         ...ChatApi.groqModels.values(),
     ]);
+
+    static reasoningEffort = {
+        "none": "None",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+    };
 
     static getModelName(model) {
         return ChatApi.chatModelNames.get(model) ?? ChatApi.chatModelNames.get(ChatApi.getDefaultModel());
@@ -276,6 +287,9 @@ class ChatApi {
             body.max_completion_tokens = body.max_tokens;
             delete body.max_tokens;
         }
+        if (ChatApi.reasoningModels.has(model)) {
+            body.reasoning_effort = options.reasoning ?? "none";
+        }
         if (options.seed != null) body.seed = options.seed;
         if (options.jsonMode == true) body.response_format = { "type": "json_object" };
 
@@ -334,7 +348,7 @@ class ChatApi {
 
     /**
      * options:
-     * model = null, seed = null, apiKey = null, continueAfterMaxTokens = true, maxTokens = null, jsonMode = false, fetchOverride = null
+     * model = null, seed = null, reasoning = "none", apiKey = null, continueAfterMaxTokens = true, maxTokens = null, jsonMode = false, fetchOverride = null
      *
      * Returns the full response string.
      */
@@ -361,7 +375,7 @@ class ChatApi {
 
     /**
      * options:
-     * model = null, seed = null, apiKey = null, maxTokens = null, jsonMode = false, maxRetries = 10, fetchOverride = null
+     * model = null, seed = null, reasoning = "none", apiKey = null, maxTokens = null, jsonMode = false, maxRetries = 10, fetchOverride = null
      */
     static async getChatStream(messages, options = null) {
         options ??= {};
@@ -384,6 +398,9 @@ class ChatApi {
         if (ChatApi.completionModels.has(model)) {
             body.max_completion_tokens = body.max_tokens;
             delete body.max_tokens;
+        }
+        if (ChatApi.reasoningModels.has(model)) {
+            body.reasoning_effort = options.reasoning ?? "none";
         }
         if (options.seed != null) body.seed = options.seed;
         if (options.jsonMode == true) body.response_format = { "type": "json_object" };

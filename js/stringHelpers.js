@@ -127,3 +127,16 @@ function addIndent(string, spaces = 4) {
 function replaceSubstring(original, start, end, placeholder) {
     return original.slice(0, start) + placeholder + original.slice(end == null ? end : end + 1);
 }
+
+
+function toNormalCase(text, makeLowerCase = false) {
+    if (makeLowerCase) text = text.toLowerCase();
+    text = text.replace(/_/g, ' ');
+    return text.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
+
+function toTextCase(text) {
+    text = toNormalCase(text);
+    text = text.replace(/([A-Z])/g, ' $1').trim();
+    return text;
+}

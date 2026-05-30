@@ -8,6 +8,7 @@
  *     - **model** (string) [optional]: The model to be used. Default is the best available.
  *     - **seed** (number) [optional]: The seed to be used. Very unreliable.
  *     - **jsonMode** (bool) [optional]: Whether to require valid json as output. Default is `false`.
+ *     - **reasoning** (string) [optional]: Reasoning effort. By default `"none"`.
  */
 async function chat(context, options = null) {
     options ??= {};
@@ -104,6 +105,18 @@ class ChatHelpers {
         this.claude3_5HaikuIdentifier,
     ]);
 
+    static reasoningModels = new Set([
+        this.gpt5_5Identifier,
+    ]);
+
+    static reasoningEffort = {
+        "none": "None",
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+    };
+
+    // Returns an array of model ids
     static async getAvailableModels() {
         return requireResponse(chatEventType, { get: 'availableModels' });
     }

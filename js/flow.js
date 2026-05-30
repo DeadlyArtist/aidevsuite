@@ -2467,6 +2467,7 @@ class Flow {
             continueAfterMaxTokens: options.continueAfterMaxTokens,
             seed: options.seed,
             jsonMode: options.jsonMode,
+            reasoning: options.reasoning,
             fetchOverride: customFetch,
         };
         let settings = Flow.elementById.get(options.id);
