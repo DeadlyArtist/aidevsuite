@@ -335,13 +335,17 @@ function escapeMarkdown(text) {
  *   - **sanitize** (bool) [optional]: Whether to sanitize the markdown html. Default is `false`.
  *   - **noHighlight** (bool) [optional]: Whether custom `==highlighted text==` syntax is disallowed. Default is `false`.
  *   - **codeblocksKeepIndent** (bool) [optional]: Whether code blocks should keep indent. Default is `true`.
+ *   - **disableHtml** (bool) [optional]: Whether html should be disabled. Default is `true`.
+ *   - **fixGPT** (bool) [optional]: Whether ChatGPT fixes should be applied. Default is `true`.
  */
 function renderMarkdown(element, markdown, options = null) {
     options ??= {};
     options.katex ??= true;
     options.codeblocksKeepIndent ??= true;
+    options.fixGPT ??= true;
+    options.disableHtml ??= true;
 
-    markdown = markdown.replaceAll("‑", "-").replace(/[  ]/g, " "); // Fix ChatGPT madness
+    if (options.fixGPT) markdown = markdown.replaceAll("‑", "-").replace(/[  ]/g, " "); // Fix ChatGPT madness
 
     // Escape math
     if (options.katex) markdown = KatexHelpers.escapeMathFromMarkdown(markdown);
@@ -354,7 +358,7 @@ function renderMarkdown(element, markdown, options = null) {
         markdown = MarkdownHelpers._replaceCodeblocks(markdown, codeBlocks);
     }
 
-    markdown = markdown.replaceAll("<", "\\<").replaceAll(">", "\\>"); // Fix ChatGPT madness
+    if (options.disableHtml) markdown = markdown.replaceAll("<", "\\<").replaceAll(">", "\\>");
 
     // Render markdown
     let html = marked.parse(markdown);
