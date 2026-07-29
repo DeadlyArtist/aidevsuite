@@ -52,7 +52,7 @@ class ChatApi {
     static gemini2_5FlashPreviewName = "Gemini 2.5 Flash Preview";
     static gemini2_0FlashName = "Gemini 2.0 Flash";
     static gemini2_0FlashLiteName = "Gemini 2.0 Flash Lite";
-    static qwen_qwq32bName = "QwQ 32b";
+    //static gptoss120bName = "GPT OSS 120B";
     static llama3_3_70bName = "Llama 3.3 70b";
     static llama3_1_8bName = "Llama 3.1 8b";
     static claude3_5SonnetName = "Claude 3.5 Sonnet";
@@ -67,7 +67,7 @@ class ChatApi {
     static gemini2_5FlashPreviewIdentifier = "gemini-2.5-flash-preview-04-17";
     static gemini2_0FlashIdentifier = "gemini-2.0-flash";
     static gemini2_0FlashLiteIdentifier = "gemini-2.0-flash-lite";
-    static qwen_qwq32bIdentifier = "qwen-qwq-32b";
+    //static gptoss120bIdentifier = "openai/gpt-oss-120b";
     static llama3_3_70bIdentifier = "llama-3.3-70b-versatile";
     static llama3_1_8bIdentifier = "llama-3.1-8b-instant";
     static claude3_5SonnetIdentifier = "claude-3-5-sonnet-latest";
@@ -75,7 +75,7 @@ class ChatApi {
 
     static defaultGptModel = ChatApi.gpt5_5Identifier;
     static defaultGoogleModel = ChatApi.gemini2_5ProExperimentalIdentifier;
-    static defaultGroqModel = ChatApi.qwen_qwq32bIdentifier;
+    static defaultGroqModel = ChatApi.llama3_3_70bIdentifier;
     static defaultAnthropicModel = ChatApi.claude3_5SonnetIdentifier;
 
     static chatModelNames = {
@@ -88,7 +88,7 @@ class ChatApi {
         [ChatApi.gemini2_5FlashPreviewIdentifier]: ChatApi.gemini2_5FlashPreviewName,
         [ChatApi.gemini2_0FlashIdentifier]: ChatApi.gemini2_0FlashName,
         [ChatApi.gemini2_0FlashLiteIdentifier]: ChatApi.gemini2_0FlashLiteName,
-        [ChatApi.qwen_qwq32bIdentifier]: ChatApi.qwen_qwq32bName,
+        //[ChatApi.gptoss120bIdentifier]: ChatApi.gptoss120bName,
         [ChatApi.llama3_3_70bIdentifier]: ChatApi.llama3_3_70bName,
         [ChatApi.llama3_1_8bIdentifier]: ChatApi.llama3_1_8bName,
         [ChatApi.claude3_5SonnetIdentifier]: ChatApi.claude3_5SonnetName,
@@ -114,6 +114,7 @@ class ChatApi {
 
     static reasoningModels = new Set([
         ChatApi.gpt5_5Identifier,
+        //ChatApi.gptoss120bIdentifier,
     ]);
 
     static gptModels = new Set([
@@ -139,7 +140,7 @@ class ChatApi {
     ]);
 
     static groqModels = new Set([
-        ChatApi.qwen_qwq32bIdentifier,
+        //ChatApi.gptoss120bIdentifier,
         ChatApi.llama3_3_70bIdentifier,
         ChatApi.llama3_1_8bIdentifier,
     ]);
@@ -212,6 +213,9 @@ class ChatApi {
         else if (model == ChatApi.gpt5MiniIdentifier) return 128000;
         else if (model == ChatApi.gptChatIdentifier) return 128000;
         else if (model == ChatApi.gpt5_5Identifier) return 128000;
+        //else if (model == ChatApi.gptoss120bIdentifier) return 65536;
+        else if (model == ChatApi.llama3_3_70bIdentifier) return 32768;
+        else if (model == ChatApi.llama3_1_8bName) return 131072;
         else if (ChatApi.googleModels.has(model)) return 8192;
         else return 4096;
     }
@@ -241,7 +245,7 @@ class ChatApi {
         if (modelSet.delete(ChatApi.gemini2_0FlashLiteIdentifier)) sortedModels.push(ChatApi.gemini2_0FlashLiteIdentifier);
         if (modelSet.delete(ChatApi.claude3_5SonnetIdentifier)) sortedModels.push(ChatApi.claude3_5SonnetIdentifier);
         if (modelSet.delete(ChatApi.claude3_5HaikuIdentifier)) sortedModels.push(ChatApi.claude3_5HaikuIdentifier);
-        if (modelSet.delete(ChatApi.qwen_qwq32bIdentifier)) sortedModels.push(ChatApi.qwen_qwq32bIdentifier);
+        //if (modelSet.delete(ChatApi.gptoss120bIdentifier)) sortedModels.push(ChatApi.gptoss120bIdentifier);
         if (modelSet.delete(ChatApi.llama3_3_70bIdentifier)) sortedModels.push(ChatApi.llama3_3_70bIdentifier);
         if (modelSet.delete(ChatApi.llama3_1_8bIdentifier)) sortedModels.push(ChatApi.llama3_1_8bIdentifier);
         sortedModels = [...sortedModels, ...modelSet.values()];
@@ -288,7 +292,7 @@ class ChatApi {
             delete body.max_tokens;
         }
         if (ChatApi.reasoningModels.has(model)) {
-            body.reasoning_effort = options.reasoning ?? "none";
+            body.reasoning_effort = options.reasoning ?? ChatApi.reasoningEffort.none;
         }
         if (options.seed != null) body.seed = options.seed;
         if (options.jsonMode == true) body.response_format = { "type": "json_object" };

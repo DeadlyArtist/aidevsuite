@@ -51,7 +51,6 @@ class ChatHelpers {
     static gemini2_5FlashPreviewName = "Gemini 2.5 Flash Preview";
     static gemini2_0FlashName = "Gemini 2.0 Flash";
     static gemini2_0FlashLiteName = "Gemini 2.0 Flash Lite";
-    static qwen_qwq32bName = "QwQ 32b";
     static llama3_3_70bName = "Llama 3.3 70b";
     static llama3_1_8bName = "Llama 3.1 8b";
     static claude3_5SonnetName = "Claude 3.5 Sonnet";
@@ -66,7 +65,6 @@ class ChatHelpers {
     static gemini2_5FlashPreviewIdentifier = "gemini-2.5-flash-preview-04-17";
     static gemini2_0FlashIdentifier = "gemini-2.0-flash";
     static gemini2_0FlashLiteIdentifier = "gemini-2.0-flash-lite";
-    static qwen_qwq32bIdentifier = "qwen-qwq-32b";
     static llama3_3_70bIdentifier = "llama-3.3-70b-versatile";
     static llama3_1_8bIdentifier = "llama-3.1-8b-instant";
     static claude3_5SonnetIdentifier = "claude-3-5-sonnet-latest";
@@ -82,7 +80,6 @@ class ChatHelpers {
         [this.gemini2_5FlashPreviewIdentifier]: this.gemini2_5FlashPreviewName,
         [this.gemini2_0FlashIdentifier]: this.gemini2_0FlashName,
         [this.gemini2_0FlashLiteIdentifier]: this.gemini2_0FlashLiteName,
-        [this.qwen_qwq32bIdentifier]: this.qwen_qwq32bName,
         [this.llama3_3_70bIdentifier]: this.llama3_3_70bName,
         [this.llama3_1_8bIdentifier]: this.llama3_1_8bName,
         [this.claude3_5SonnetIdentifier]: this.claude3_5SonnetName,
