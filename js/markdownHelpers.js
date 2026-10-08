@@ -358,7 +358,7 @@ function renderMarkdown(element, markdown, options = null) {
         markdown = MarkdownHelpers._replaceCodeblocks(markdown, codeBlocks);
     }
 
-    if (options.disableHtml) markdown = markdown.replaceAll("<", "\\<").replaceAll(">", "\\>");
+    if (options.disableHtml) markdown = markdown.replaceAll(/(?<!\\)</g, "\\<").replaceAll(/(?<!\\)>/g, "\\>");;
 
     // Render markdown
     let html = marked.parse(markdown);
